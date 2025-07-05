@@ -22,7 +22,7 @@ func HandleInterestAdd(bend *Backend, route fiber.Router){
 		if res.Error != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 				"code": fiber.StatusInternalServerError,
-				"data": fmt.Sprintf("There is a problem when trying to edit the db, %v.", res.Error),
+				"data": fmt.Sprintf("There is a problem when trying to get the db, %v.", res.Error),
 			})
 		}
 
@@ -41,7 +41,7 @@ func HandleInterestInfoAll(bend *Backend, route fiber.Router){
 		if res.Error != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 				"code": fiber.StatusInternalServerError,
-				"data": fmt.Sprintf("There is a problem when trying to edit the db, %v.", res.Error),
+				"data": fmt.Sprintf("There is a problem when trying to get the db, %v.", res.Error),
 			})
 		}
 

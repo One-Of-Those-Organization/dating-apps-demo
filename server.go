@@ -58,6 +58,8 @@ func InitAPIRoute(backend *Backend) {
 	HandleInterestAdd(backend, api)
 	HandleInterestInfoAll(backend, api)
 
+	HandleHobbyAdd(backend, api)
+	HandleHobbyInfoAll(backend, api)
 
 	HandleHello(backend, app)
 }
