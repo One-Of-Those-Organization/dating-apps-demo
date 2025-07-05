@@ -11,24 +11,34 @@
     <header
       class="flex bg-pink-500 text-white p-4 justify-between items-center shadow-lg"
     >
-      <h1 class="text-2xl font-bold tracking-wide">💖 Dating App</h1>
+      <h1 class="text-2xl font-bold tracking-wide">
+        <a href="/">💖 Dating App</a>
+      </h1>
       <nav class="bg-pink-500 p-4 flex items-center relative">
         <div class="flex-1"></div>
         <!-- Desktop menu -->
         <ul class="hidden md:flex space-x-4">
-          <li>
+          <li id="guest-signup" style="display: none">
             <a
               href="/register"
               class="text-white border-2 border-white p-2 px-5 rounded-xl bg-blue-500 hover:bg-blue-600 transition"
               >Sign Up</a
             >
           </li>
-          <li>
+          <li id="guest-login" style="display: none">
             <a
               href="/login"
               class="text-pink-500 border-2 border-white p-2 px-5 rounded-xl bg-white hover:bg-pink-100 transition"
               >Log In</a
             >
+          </li>
+          <li id="user-logout" style="display: none">
+            <button
+              onclick="handleLogout()"
+              class="text-white border-2 border-white p-2 px-5 rounded-xl bg-red-500 hover:bg-red-600 transition"
+            >
+              Logout
+            </button>
           </li>
         </ul>
         <!-- Hamburger Button (Mobile Only) -->
@@ -57,15 +67,27 @@
         >
           <p><strong class="text-pink-500 text-2xl">Main Menu</strong><br /></p>
           <a
+            id="mobile-guest-signup"
             href="/register"
             class="text-white border-2 border-white p-2 px-5 rounded-xl bg-blue-500 hover:bg-blue-600 transition"
+            style="display: none"
             >Sign Up</a
           >
           <a
+            id="mobile-guest-login"
             href="/login"
             class="text-pink-500 border-2 border-pink-500 p-2 px-5 rounded-xl bg-white hover:bg-pink-100 transition"
+            style="display: none"
             >Log In</a
           >
+          <button
+            id="mobile-user-logout"
+            onclick="handleLogout()"
+            class="text-white border-2 border-white p-2 px-5 rounded-xl bg-red-500 hover:bg-red-600 transition"
+            style="display: none"
+          >
+            Logout
+          </button>
         </div>
         <script>
           const menuBtn = document.getElementById("menu-btn");
@@ -110,6 +132,7 @@
           Your love story starts here! 💌
         </p>
         <a
+          id="cta-button"
           href="/register"
           class="inline-block px-8 py-3 rounded-full bg-pink-500 hover:bg-pink-600 text-white font-semibold text-lg shadow-lg transition"
           >Get Started</a
@@ -161,6 +184,7 @@
         Ready to meet someone new?
       </h4>
       <a
+        id="cta-button-2"
         href="/register"
         class="inline-block px-12 py-3 rounded-full bg-pink-500 hover:bg-pink-600 text-white font-semibold text-xl shadow-lg transition"
         >Join Now</a
@@ -172,4 +196,79 @@
       <p>&copy; 2025 Dating App. All rights reserved.</p>
     </footer>
   </body>
+  <script>
+    // Function to get cookie value by name for checking login status and updating navbar
+    function getCookie(name) {
+      const cookies = document.cookie.split("; ");
+      for (const c of cookies) {
+        const [key, val] = c.split("=");
+        if (key === name) return decodeURIComponent(val);
+      }
+      return null;
+    }
+
+    function updateNavbar() {
+      const jwtCookie = getCookie("jwt");
+      const isLoggedIn = jwtCookie && jwtCookie.trim() !== "";
+
+      if (isLoggedIn) {
+        // User is logged in - show logout button
+        document.getElementById("guest-signup").style.display = "none";
+        document.getElementById("guest-login").style.display = "none";
+        document.getElementById("user-logout").style.display = "block";
+
+        // Mobile
+        document.getElementById("mobile-guest-signup").style.display = "none";
+        document.getElementById("mobile-guest-login").style.display = "none";
+        document.getElementById("mobile-user-logout").style.display = "block";
+
+        // Update CTA buttons
+        document.getElementById("cta-button").href = "/p/home";
+        document.getElementById("cta-button").textContent = "Go to Home";
+        document.getElementById("cta-button-2").href = "/p/home";
+        document.getElementById("cta-button-2").textContent = "Go to Home";
+      } else {
+        // User is NOT logged in - show login/register buttons
+        document.getElementById("guest-signup").style.display = "block";
+        document.getElementById("guest-login").style.display = "block";
+        document.getElementById("user-logout").style.display = "none";
+
+        // Mobile
+        document.getElementById("mobile-guest-signup").style.display = "block";
+        document.getElementById("mobile-guest-login").style.display = "block";
+        document.getElementById("mobile-user-logout").style.display = "none";
+
+        // Keep original CTA buttons
+        document.getElementById("cta-button").href = "/register";
+        document.getElementById("cta-button").textContent = "Get Started";
+        document.getElementById("cta-button-2").href = "/register";
+        document.getElementById("cta-button-2").textContent = "Join Now";
+      }
+    }
+
+    function handleLogout() {
+      fetch("/api/p/user-logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => {
+          if (response.status === 200) {
+            updateNavbar();
+            window.location.href = "/login";
+          } else {
+            alert("Logout failed. Please try again.");
+          }
+        })
+        .catch((error) => {
+          console.error("Logout error:", error);
+          alert("An error occurred during logout. Please try again.");
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      updateNavbar();
+    });
+  </script>
 </html>

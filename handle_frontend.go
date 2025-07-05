@@ -37,6 +37,7 @@ func HomePage(bend *Backend, route fiber.Router) {
 		if err != nil {
 			return c.Redirect("/login")
 		}
+		
 		bend.engine.ClearCache()
 		return c.Render("home", fiber.Map{
 			"Title": "Home Page",
@@ -50,6 +51,7 @@ func ResultPage(bend *Backend, route fiber.Router) {
 		if err != nil {
 			return c.Redirect("/login")
 		}
+
 		bend.engine.ClearCache()
 		return c.Render("result", fiber.Map{
 			"Title": "Result Page",

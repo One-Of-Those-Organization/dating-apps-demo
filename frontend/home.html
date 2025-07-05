@@ -15,16 +15,18 @@
   </head>
   <body class="bg-pink-50 min-h-screen">
     <header
-      class="flex bg-pink-500 text-white p-4 justify-between items-center shadow-lg"
+      class="dating-header flex bg-pink-500 text-white p-4 justify-between items-center shadow-lg"
     >
-      <h1 class="text-2xl font-bold tracking-wide">💖 Dating App</h1>
+      <h1 class="text-2xl font-bold tracking-wide">
+        <a href="/" class="hover:text-pink-200 transition">💖 Dating App</a>
+      </h1>
       <nav class="bg-pink-500 p-4 flex items-center relative">
         <div class="flex-1"></div>
         <!-- Desktop menu -->
         <ul class="hidden md:flex space-x-4">
           <li>
             <button
-              class="text-white border-2 border-white p-2 px-5 rounded-xl bg-red-500 hover:bg-blue-600 transition"
+              class="dating-button text-white border-2 border-white p-2 px-5 rounded-xl bg-red-500 hover:bg-red-600 transition"
               id="logout-btn"
               onclick="handleLogout()"
             >
@@ -58,44 +60,17 @@
         >
           <p><strong class="text-pink-500 text-2xl">Main Menu</strong><br /></p>
           <button
-            class="text-pink-500 border-2 border-pink-500 p-2 px-5 rounded-xl bg-white hover:bg-pink-100 transition"
+            class="dating-button text-pink-500 border-2 border-pink-500 p-2 px-5 rounded-xl bg-white hover:bg-pink-100 transition"
             onclick="handleLogout()"
           >
             Logout
           </button>
         </div>
-        <script>
-          const menuBtn = document.getElementById("menu-btn");
-          const mobileMenu = document.getElementById("mobile-menu");
-
-          menuBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            mobileMenu.classList.toggle("translate-x-full");
-          });
-
-          // Tutup menu saat klik di luar menu
-          document.addEventListener("click", function (event) {
-            if (
-              !menuBtn.contains(event.target) &&
-              !mobileMenu.contains(event.target)
-            ) {
-              mobileMenu.classList.add("translate-x-full");
-            }
-          });
-
-          // Tutup menu saat resize ke desktop
-          window.addEventListener("resize", () => {
-            if (window.innerWidth >= 768) {
-              mobileMenu.classList.add("translate-x-full");
-            }
-          });
-        </script>
       </nav>
     </header>
 
-    <!-- Main Content -->
     <main
-      class="max-w-md mx-auto mt-8 p-8 bg-white shadow-2xl rounded-3xl border border-pink-200"
+      class="dating-container max-w-md mx-auto mt-8 p-8 bg-white shadow-2xl rounded-3xl border border-pink-200 mb-12"
     >
       <div class="flex flex-col items-center mb-8">
         <div class="text-5xl mb-2">💖</div>
@@ -106,247 +81,282 @@
           Select your hobbies below so we can match you with like-minded people!
         </p>
       </div>
-      <div class="mb-6">
-        <label class="block text-pink-700 font-bold mb-3 text-lg" for="hobby"
-          >Your Hobbies</label
-        >
-        <select
-          id="hobby"
-          name="hobby"
-          class="chosen-select w-full"
-          multiple
-          data-placeholder="Choose your hobbies..."
-        >
-          <option value="reading">📚 Reading</option>
-          <option value="sports">🏀 Sports</option>
-          <option value="music">🎵 Music</option>
-          <option value="traveling">🌍 Traveling</option>
-          <option value="cooking">🍳 Cooking</option>
-          <option value="gaming">🎮 Gaming</option>
-          <option value="art">🎨 Art</option>
-          <option value="photography">📷 Photography</option>
-          <option value="movies">🎬 Movies</option>
-          <option value="dancing">💃 Dancing</option>
-        </select>
-        <p class="text-xs text-pink-400 mt-2">
-          Click to select multiple hobbies!
-        </p>
-      </div>
-      <div class="mb-6">
-        <label
-          class="block text-pink-700 font-bold mb-3 text-lg"
-          for="interest"
-        >
-          Your Interests
-        </label>
-        <select
-          id="interest"
-          name="interest"
-          class="chosen-select w-full"
-          multiple
-          data-placeholder="Choose your interests..."
-        >
-          <option value="technology">💻 Technology</option>
-          <option value="fashion">👗 Fashion</option>
-          <option value="science">🔬 Science</option>
-          <option value="nature">🌱 Nature</option>
-          <option value="movies">🎬 Movies</option>
-          <option value="food">🍔 Food</option>
-          <option value="sports">🏆 Sports</option>
-          <option value="travel">✈️ Travel</option>
-          <option value="photography">📸 Photography</option>
-          <option value="music">🎶 Music</option>
-        </select>
-        <p class="text-xs text-pink-400 mt-2">
-          Click to select multiple interests!
-        </p>
-      </div>
-      <button
-        type="submit"
-        id="save-btn"
-        class="w-full bg-pink-500 hover:bg-pink-600 transition font-bold py-3 rounded-xl text-white text-lg shadow-lg flex justify-center items-center"
-        onclick="handleSave()"
-      >
-        <span class="mr-2">Save</span>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-6 w-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M5 12h14M12 5l7 7-7 7"
-          />
-        </svg>
-      </button>
-    </main>
-  </body>
 
-  <script>
-    // For the Chosen plugin
-    $(function () {
-      $(".chosen-select").chosen({
-        no_results_text: "Oops, nothing found!",
-        width: "100%",
+      <form class="space-y-6">
+        <div class="mb-6">
+          <label class="block text-pink-700 font-bold mb-3 text-lg" for="hobby">
+            Your Hobbies
+          </label>
+          <select
+            id="hobby"
+            name="hobby"
+            class="chosen-select w-full"
+            multiple
+            data-placeholder="Choose your hobbies..."
+          >
+            <option value="reading">📚 Reading</option>
+            <option value="sports">🏀 Sports</option>
+            <option value="music">🎵 Music</option>
+            <option value="traveling">🌍 Traveling</option>
+            <option value="cooking">🍳 Cooking</option>
+            <option value="gaming">🎮 Gaming</option>
+            <option value="art">🎨 Art</option>
+            <option value="photography">📷 Photography</option>
+            <option value="movies">🎬 Movies</option>
+            <option value="dancing">💃 Dancing</option>
+          </select>
+          <p class="text-xs text-pink-400 mt-2">
+            Click to select multiple hobbies!
+          </p>
+        </div>
+
+        <div class="mb-6">
+          <label
+            class="block text-pink-700 font-bold mb-3 text-lg"
+            for="interest"
+          >
+            Your Interests
+          </label>
+          <select
+            id="interest"
+            name="interest"
+            class="chosen-select w-full"
+            multiple
+            data-placeholder="Choose your interests..."
+          >
+            <option value="technology">💻 Technology</option>
+            <option value="fashion">👗 Fashion</option>
+            <option value="science">🔬 Science</option>
+            <option value="nature">🌱 Nature</option>
+            <option value="movies">🎬 Movies</option>
+            <option value="food">🍔 Food</option>
+            <option value="sports">🏆 Sports</option>
+            <option value="travel">✈️ Travel</option>
+            <option value="photography">📸 Photography</option>
+            <option value="music">🎶 Music</option>
+          </select>
+          <p class="text-xs text-pink-400 mt-2">
+            Click to select multiple interests!
+          </p>
+        </div>
+
+        <button
+          type="button"
+          id="save-btn"
+          class="dating-button w-full bg-pink-500 hover:bg-pink-600 transition font-bold py-3 rounded-xl text-white text-lg shadow-lg flex justify-center items-center"
+          onclick="handleSave()"
+        >
+          <span class="mr-2">Save</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 12h14M12 5l7 7-7 7"
+            />
+          </svg>
+        </button>
+      </form>
+    </main>
+
+    <footer class="bg-pink-500 text-white mt-auto p-6 text-center">
+      <p>&copy; 2025 Dating App. All rights reserved.</p>
+    </footer>
+
+    <script>
+      // Hamburger menu toggle
+      const menuBtn = document.getElementById("menu-btn");
+      const mobileMenu = document.getElementById("mobile-menu");
+
+      menuBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        mobileMenu.classList.toggle("translate-x-full");
       });
 
-      // Load data yang sudah tersimpan untuk pre-select
-      fetchUserSavedData();
-    });
+      // Close menu when clicking outside
+      document.addEventListener("click", function (event) {
+        if (
+          !menuBtn.contains(event.target) &&
+          !mobileMenu.contains(event.target)
+        ) {
+          mobileMenu.classList.add("translate-x-full");
+        }
+      });
 
-    // Function handle save hobbies and interests
-    function handleSave() {
-      const hobby = document.getElementById("hobby");
-      const interest = document.getElementById("interest");
-      const saveBtn = document.getElementById("save-btn");
+      // Close menu when resize to desktop
+      window.addEventListener("resize", () => {
+        if (window.innerWidth >= 768) {
+          mobileMenu.classList.add("translate-x-full");
+        }
+      });
 
-      const selectedHobbies = Array.from(hobby.selectedOptions).map(
-        (opt) => opt.value
-      );
-      const selectedInterests = Array.from(interest.selectedOptions).map(
-        (opt) => opt.value
-      );
+      // For the Chosen plugin
+      $(function () {
+        $(".chosen-select").chosen({
+          no_results_text: "Oops, nothing found!",
+          width: "100%",
+        });
 
-      // Validation: Check if user selected at least one hobby or interest
-      if (selectedHobbies.length === 0 && selectedInterests.length === 0) {
-        alert("Please select at least one hobby or interest!");
-        return;
+        // Load data yang sudah tersimpan untuk pre-select
+        fetchUserSavedData();
+      });
+
+      // Function handle save hobbies and interests
+      function handleSave() {
+        const hobby = document.getElementById("hobby");
+        const interest = document.getElementById("interest");
+        const saveBtn = document.getElementById("save-btn");
+
+        const selectedHobbies = Array.from(hobby.selectedOptions).map(
+          (opt) => opt.value
+        );
+        const selectedInterests = Array.from(interest.selectedOptions).map(
+          (opt) => opt.value
+        );
+
+        // Validation: Check if user selected at least one hobby or interest
+        if (selectedHobbies.length === 0 && selectedInterests.length === 0) {
+          alert("Please select at least one hobby or interest!");
+          return;
+        }
+
+        // Disable button dan show loading
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<span class="mr-2">Saving...</span>';
+
+        // Kirim Hobby
+        fetch("/api/hobby-add", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ hobbies: selectedHobbies }),
+        })
+          .then((response) => {
+            if (!response.ok) throw new Error("Failed to save hobbies");
+            // Kirim Interest setelah Hobby sukses
+            return fetch("/api/interest-add", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ interests: selectedInterests }),
+            });
+          })
+          .then((response) => {
+            if (response.ok) {
+              // Success - redirect ke result
+              window.location.href = "/p/result";
+            } else {
+              throw new Error("Failed to save interests");
+            }
+          })
+          .catch((error) => {
+            console.error("Error saving data:", error);
+            alert("An error occurred while saving. Please try again.");
+
+            // Reset button
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = `
+              <span class="mr-2">Save</span>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            `;
+          });
       }
 
-      // Disable button dan show loading
-      saveBtn.disabled = true;
-      saveBtn.innerHTML = '<span class="mr-2">Saving...</span>';
+      // Fetch data yang sudah user simpan sebelumnya
+      function fetchUserSavedData() {
+        // Fetch saved hobbies
+        fetch("/api/hobby-info-all", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => response.json())
+          .then((response) => {
+            if (response.code === 200 && Array.isArray(response.data)) {
+              const hobbySelect = document.getElementById("hobby");
 
-      // Kirim Hobby
-      fetch("/api/hobby-add", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ hobbies: selectedHobbies }),
-      })
-        .then((response) => {
-          if (!response.ok) throw new Error("Failed to save hobbies");
-          // Kirim Interest setelah Hobby sukses
-          return fetch("/api/interest-add", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ interests: selectedInterests }),
+              // Set selected berdasarkan data yang sudah tersimpan
+              response.data.forEach((item) => {
+                const savedHobbyName = item.Name || "";
+
+                // Cari option yang sesuai dan set selected
+                const option = hobbySelect.querySelector(
+                  `option[value="${savedHobbyName}"]`
+                );
+                if (option) {
+                  option.selected = true;
+                }
+              });
+
+              // Update chosen plugin
+              $("#hobby").trigger("chosen:updated");
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching user hobbies:", error);
           });
+
+        // Fetch saved interests
+        fetch("/api/interest-info-all", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
         })
-        .then((response) => {
-          if (response.ok) {
-            // Success - redirect ke result
-            window.location.href = "/p/result";
-          } else {
-            throw new Error("Failed to save interests");
-          }
+          .then((response) => response.json())
+          .then((response) => {
+            if (response.code === 200 && Array.isArray(response.data)) {
+              const interestSelect = document.getElementById("interest");
+
+              // Set selected berdasarkan data yang sudah tersimpan
+              response.data.forEach((item) => {
+                const savedInterestName = item.Name || "";
+
+                // Cari option yang sesuai dan set selected
+                const option = interestSelect.querySelector(
+                  `option[value="${savedInterestName}"]`
+                );
+                if (option) {
+                  option.selected = true;
+                }
+              });
+
+              // Update chosen plugin
+              $("#interest").trigger("chosen:updated");
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching user interests:", error);
+          });
+      }
+
+      // API logout
+      function handleLogout() {
+        fetch("/api/p/user-logout", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
         })
-        .catch((error) => {
-          console.error("Error saving data:", error);
-          alert("An error occurred while saving. Please try again.");
-
-          // Reset button
-          saveBtn.disabled = false;
-          saveBtn.innerHTML = `
-            <span class="mr-2">Save</span>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-          `;
-        });
-    }
-
-    // Fetch data yang sudah user simpan sebelumnya
-    function fetchUserSavedData() {
-      // Fetch saved hobbies - GANTI DENGAN USER-SPECIFIC ENDPOINT
-      fetch("/api/hobby-info-all", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-        .then((response) => response.json())
-        .then((response) => {
-          if (response.code === 200 && Array.isArray(response.data)) {
-            const hobbySelect = document.getElementById("hobby");
-
-            // Set selected berdasarkan data yang sudah tersimpan
-            response.data.forEach((item) => {
-              const savedHobbyName = item.Name || "";
-
-              // Cari option yang sesuai dan set selected
-              const option = hobbySelect.querySelector(
-                `option[value="${savedHobbyName}"]`
-              );
-              if (option) {
-                option.selected = true;
-              }
-            });
-
-            // Update chosen plugin
-            $("#hobby").trigger("chosen:updated");
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching user hobbies:", error);
-        });
-
-      // Fetch saved interests - GANTI DENGAN USER-SPECIFIC ENDPOINT
-      fetch("/api/interest-info-all", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-        .then((response) => response.json())
-        .then((response) => {
-          if (response.code === 200 && Array.isArray(response.data)) {
-            const interestSelect = document.getElementById("interest");
-
-            // Set selected berdasarkan data yang sudah tersimpan
-            response.data.forEach((item) => {
-              const savedInterestName = item.Name || "";
-
-              // Cari option yang sesuai dan set selected
-              const option = interestSelect.querySelector(
-                `option[value="${savedInterestName}"]`
-              );
-              if (option) {
-                option.selected = true;
-              }
-            });
-
-            // Update chosen plugin
-            $("#interest").trigger("chosen:updated");
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching user interests:", error);
-        });
-    }
-
-    // API logout
-    function handleLogout() {
-      fetch("/api/p/user-logout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-        .then((response) => {
-          if (response.status === 200) {
-            window.location.href = "/login";
-          } else {
-            alert("Logout failed. Please try again.");
-          }
-        })
-        .catch((error) => {
-          console.error("Logout error:", error);
-          alert("An error occurred during logout. Please try again.");
-        });
-    }
-  </script>
+          .then((response) => {
+            if (response.status === 200) {
+              window.location.href = "/login";
+            } else {
+              alert("Logout failed. Please try again.");
+            }
+          })
+          .catch((error) => {
+            console.error("Logout error:", error);
+            alert("An error occurred during logout. Please try again.");
+          });
+      }
+    </script>
+  </body>
 </html>

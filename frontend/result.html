@@ -6,7 +6,136 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <title>Result</title>
   </head>
-  <body>
-    <h1>Result not implemented yet</h1>
+  <body class="bg-pink-50 min-h-screen flex flex-col">
+    <!-- Header -->
+    <header
+      class="flex bg-pink-500 text-white p-4 justify-between items-center shadow-lg"
+    >
+      <h1 class="text-2xl font-bold tracking-wide">
+        <a href="/">💖 Dating App</a>
+      </h1>
+      <nav class="bg-pink-500 p-4 flex items-center relative">
+        <div class="flex-1"></div>
+        <!-- Desktop menu - Always show logged in buttons -->
+        <ul class="hidden md:flex space-x-4">
+          <li>
+            <button
+              onclick="handleLogout()"
+              class="text-white border-2 border-white p-2 px-5 rounded-xl bg-red-500 hover:bg-red-600 transition"
+            >
+              Logout
+            </button>
+          </li>
+        </ul>
+        <!-- Hamburger Button (Mobile Only) -->
+        <button
+          id="menu-btn"
+          class="md:hidden flex items-center text-white text-3xl focus:outline-none ml-2 z-50"
+        >
+          <svg
+            class="w-8 h-8"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M4 6h16M4 12h16M4 18h16"
+            />
+          </svg>
+        </button>
+        <!-- Mobile Menu - Always show logged in buttons -->
+        <div
+          id="mobile-menu"
+          class="fixed top-0 right-0 h-full w-64 bg-white shadow-lg z-40 flex flex-col gap-4 p-8 transform translate-x-full transition-transform duration-300 md:hidden"
+        >
+          <p><strong class="text-pink-500 text-2xl">Main Menu</strong><br /></p>
+          <a
+            href="/p/home"
+            class="text-white border-2 border-white p-2 px-5 rounded-xl bg-green-500 hover:bg-green-600 transition"
+            >Home</a
+          >
+          <button
+            onclick="handleLogout()"
+            class="text-white border-2 border-white p-2 px-5 rounded-xl bg-red-500 hover:bg-red-600 transition"
+          >
+            Logout
+          </button>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex items-center justify-center p-6">
+      <div class="text-center">
+        <h1 class="text-4xl font-bold text-pink-700 mb-4">🎯 Result Page</h1>
+        <p class="text-lg text-pink-600 mb-8">Result not implemented yet</p>
+        <div class="bg-white rounded-xl shadow-lg p-8">
+          <div class="text-6xl mb-4">🚧</div>
+          <h2 class="text-2xl font-semibold text-pink-700 mb-2">
+            Coming Soon!
+          </h2>
+          <p class="text-pink-600">
+            This feature is under development.<br />
+            Stay tuned for updates!
+          </p>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-pink-500 text-white mt-auto p-6 text-center">
+      <p>&copy; 2025 Dating App. All rights reserved.</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+      const menuBtn = document.getElementById("menu-btn");
+      const mobileMenu = document.getElementById("mobile-menu");
+
+      menuBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        mobileMenu.classList.toggle("translate-x-full");
+      });
+
+      // Close menu when clicking outside
+      document.addEventListener("click", function (event) {
+        if (
+          !menuBtn.contains(event.target) &&
+          !mobileMenu.contains(event.target)
+        ) {
+          mobileMenu.classList.add("translate-x-full");
+        }
+      });
+
+      // Close menu when resize to desktop
+      window.addEventListener("resize", () => {
+        if (window.innerWidth >= 768) {
+          mobileMenu.classList.add("translate-x-full");
+        }
+      });
+
+      function handleLogout() {
+        fetch("/api/p/user-logout", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => {
+            if (response.status === 200) {
+              window.location.href = "/login";
+            } else {
+              alert("Logout failed. Please try again.");
+            }
+          })
+          .catch((error) => {
+            console.error("Logout error:", error);
+            alert("An error occurred during logout. Please try again.");
+          });
+      }
+    </script>
   </body>
 </html>

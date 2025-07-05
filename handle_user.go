@@ -159,14 +159,14 @@ func HandleUserLogin(bend *Backend, route fiber.Router) {
 // POST: api/p/user-logout
 func HandleUserLogout(bend *Backend, route fiber.Router) {
 	route.Post("user-logout", func (c *fiber.Ctx) error {
-		_, err := GetJWT(c)
-		if err != nil {
-			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-				"code": fiber.StatusUnauthorized,
-				"data": "Failed to claim JWT.",
-			})
-		}
-		c.ClearCookie("jwt")
+        c.Cookie(&fiber.Cookie{
+            Name:     "jwt",
+            Value:    "",
+            Path:     "/",
+            MaxAge:   -1,
+            Expires:  time.Now().Add(-24 * time.Hour),
+        })
+
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
 			"code": fiber.StatusOK,
 			"data": nil,
@@ -189,7 +189,7 @@ func HandleUserEdit(bend *Backend, route fiber.Router){
 			FullName *string  `json:"fullname"`
 			Instance *string  `json:"instance"`
 			Age      *int     `json:"age"`
-			Biodata  *string `json:"biodata"`
+			Biodata  *string  `json:"biodata"`
 			Password *string  `json:"password"`
 			Home     *string  `json:"home"`
 
