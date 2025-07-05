@@ -17,14 +17,17 @@ const MIN_PASSLEN = 8
 func HandleUserRegister(bend *Backend, route fiber.Router){
 	route.Post("user-register", func (c *fiber.Ctx) error {
 		var b struct {
-			Name     string  `json:"name"`
-			FullName string  `json:"fullname"`
-			Instance string  `json:"instance"`
-			Age      int     `json:"age"`
-			Biodata  string  `json:"biodata"`
-			Password string  `json:"password"`
-			Gender   bool    `json:"gender"`
-			Home     string  `json:"home"`
+			Name      string           `json:"name"`
+			FullName  string           `json:"fullname"`
+			Instance  string           `json:"instance"`
+			Age       int              `json:"age"`
+			Biodata   string           `json:"biodata"`
+			Password  string           `json:"password"`
+			Gender    bool             `json:"gender"`
+			Home      string           `json:"home"`
+
+			Hobbies   []table.Hobby    `json:"hobbies"`
+			Interests []table.Interest `json:"interests"`
 		}
 
 		err := c.BodyParser(&b)
@@ -59,6 +62,8 @@ func HandleUserRegister(bend *Backend, route fiber.Router){
 			Password: hashedPassword,
 			Gender: b.Gender,
 			Home: b.Home,
+			Hobbies: b.Hobbies,
+			Interests: b.Interests,
 		}
 
 		res := bend.db.Save(&newUser)
@@ -187,6 +192,9 @@ func HandleUserEdit(bend *Backend, route fiber.Router){
 			Biodata  *string `json:"biodata"`
 			Password *string  `json:"password"`
 			Home     *string  `json:"home"`
+
+			Hobbies   []table.Hobby    `json:"hobbies"`
+			Interests []table.Interest `json:"interests"`
 		}
 
 		err = c.BodyParser(&b)
@@ -211,6 +219,10 @@ func HandleUserEdit(bend *Backend, route fiber.Router){
 				"data": fmt.Sprintf("There is a problem when trying to edit the db, %v.", res.Error),
 			})
 		}
+
+		// NOTE: Will overwritte so please do info-of first and send the mutated one.
+		if len(b.Hobbies) > 0   { user.Hobbies = b.Hobbies }
+		if len(b.Interests) > 0 { user.Interests = b.Interests }
 
 		if b.FullName != nil {
 			if len(*b.FullName) > 0 { user.FullName = *b.FullName }
@@ -263,9 +275,34 @@ func HandleUserEdit(bend *Backend, route fiber.Router){
 // GET: api/p/user-info
 func HandleUserInfo(bend *Backend, route fiber.Router) {
 	route.Get("user-info", func (c *fiber.Ctx) error {
+		claims, err := GetJWT(c)
+		if err != nil {
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"code": fiber.StatusUnauthorized,
+				"data": "Failed to claim JWT.",
+			})
+		}
+		name := claims["name"].(string)
+
+		var user table.User
+		res := bend.db.Preload("Hobby").Preload("Interest").Where("user_name = ?", name).First(&user)
+		if res.Error != nil {
+			if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+				return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+					"code": fiber.StatusBadRequest,
+					"data": "User is not registered.",
+				})
+			}
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"code": fiber.StatusInternalServerError,
+				"data": fmt.Sprintf("There is a problem when trying to get the db, %v.", res.Error),
+			})
+		}
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
 			"code": fiber.StatusOK,
-			"data": nil,
+			"data": user,
 		})
 	})
 }
+
+// NOTE: DONT HAVE : user-delete, user-info-all

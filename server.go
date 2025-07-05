@@ -50,6 +50,14 @@ func InitAPIRoute(backend *Backend) {
     app.Static("/static", "./static")
 
 	HandleUserRegister(backend, api)
+	HandleUserLogin(backend, api)
+	HandleUserEdit(backend, cookieJWT)
+	HandleUserInfo(backend, cookieJWT)
 	HandleUserLogout(backend, cookieJWT)
+
+	HandleInterestAdd(backend, api)
+	HandleInterestInfoAll(backend, api)
+
+
 	HandleHello(backend, app)
 }
