@@ -2,7 +2,11 @@ package main
 
 import (
     "fmt"
+	"errors"
+
     "golang.org/x/crypto/bcrypt"
+	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 func HashPassword(password string) (string, error) {
@@ -18,5 +22,17 @@ func HashPassword(password string) (string, error) {
 func CheckPassword(hashedPassword, plainPassword string) bool {
     err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(plainPassword))
     return err == nil
+}
+
+func GetJWT(c *fiber.Ctx) (jwt.MapClaims, error) {
+    user := c.Locals("user").(*jwt.Token)
+    if user == nil {
+        return nil, errors.New("JWT token not valid")
+    }
+    if !user.Valid {
+        return nil, errors.New("JWT token expired")
+    }
+    claims := user.Claims.(jwt.MapClaims)
+    return claims, nil
 }
 

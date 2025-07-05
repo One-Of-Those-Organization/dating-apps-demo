@@ -21,7 +21,7 @@ func HandleUserRegister(bend *Backend, route fiber.Router){
 			FullName string  `json:"fullname"`
 			Instance string  `json:"instance"`
 			Age      int     `json:"age"`
-			Biodata  string `json:"biodata"`
+			Biodata  string  `json:"biodata"`
 			Password string  `json:"password"`
 			Gender   bool    `json:"gender"`
 			Home     string  `json:"home"`
@@ -147,6 +147,125 @@ func HandleUserLogin(bend *Backend, route fiber.Router) {
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
 			"code": fiber.StatusOK,
 			"data": t,
+		})
+	})
+}
+
+// POST: api/p/user-logout
+func HandleUserLogout(bend *Backend, route fiber.Router) {
+	route.Post("user-logout", func (c *fiber.Ctx) error {
+		_, err := GetJWT(c)
+		if err != nil {
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"code": fiber.StatusUnauthorized,
+				"data": "Failed to claim JWT.",
+			})
+		}
+		c.ClearCookie("jwt")
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{
+			"code": fiber.StatusOK,
+			"data": nil,
+		})
+	})
+}
+
+// POST: api/p/user-edit
+func HandleUserEdit(bend *Backend, route fiber.Router){
+	route.Post("user-edit", func (c *fiber.Ctx) error {
+		claims, err := GetJWT(c)
+		if err != nil {
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"code": fiber.StatusUnauthorized,
+				"data": "Failed to claim JWT.",
+			})
+		}
+		name := claims["name"].(string)
+		var b struct {
+			FullName *string  `json:"fullname"`
+			Instance *string  `json:"instance"`
+			Age      *int     `json:"age"`
+			Biodata  *string `json:"biodata"`
+			Password *string  `json:"password"`
+			Home     *string  `json:"home"`
+		}
+
+		err = c.BodyParser(&b)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"code": fiber.StatusBadRequest,
+				"data": "Bad Request body.",
+			})
+		}
+
+		var user table.User
+		res := bend.db.Where("user_name = ?", name).First(&user)
+		if res.Error != nil {
+			if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+				return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+					"code": fiber.StatusBadRequest,
+					"data": "User is not registered.",
+				})
+			}
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"code": fiber.StatusInternalServerError,
+				"data": fmt.Sprintf("There is a problem when trying to edit the db, %v.", res.Error),
+			})
+		}
+
+		if b.FullName != nil {
+			if len(*b.FullName) > 0 { user.FullName = *b.FullName }
+		}
+		if b.Instance != nil {
+			user.Instance = *b.Instance
+		}
+		if b.Age != nil {
+			if *b.Age >= 18 { user.Age = *b.Age }
+		}
+		if b.Biodata != nil {
+			user.Biodata = *b.Biodata
+		}
+		if b.Home != nil {
+			user.Home = *b.Home
+		}
+
+		if b.Password != nil {
+			if len(*b.Password) < MIN_PASSLEN {
+				return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+					"code": fiber.StatusBadRequest,
+					"data": fmt.Sprintf("Password must be longer than %d.", MIN_PASSLEN),
+				})
+			}
+			hashedPassword, err := HashPassword(*b.Password)
+			if err != nil {
+				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+					"code": fiber.StatusInternalServerError,
+					"data": fmt.Sprintf("Failed to hash the password, %v.", err),
+				})
+			}
+			user.Password = hashedPassword
+		}
+
+		res = bend.db.Save(&user)
+		if res.Error != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"code": fiber.StatusInternalServerError,
+				"data": fmt.Sprintf("There is a problem when trying to edit the db, %v.", res.Error),
+			})
+		}
+
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{
+			"code": fiber.StatusOK,
+			"data": nil,
+		})
+	})
+}
+
+// GET: api/p/user-info
+func HandleUserInfo(bend *Backend, route fiber.Router) {
+	route.Get("user-info", func (c *fiber.Ctx) error {
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{
+			"code": fiber.StatusOK,
+			"data": nil,
 		})
 	})
 }

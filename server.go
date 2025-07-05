@@ -7,7 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func InitServer(address string, dbFile string) (*Backend, error) {
+func InitServer(address string, dbFile string, password string) (*Backend, error) {
 	db, err := ReadDB(dbFile)
 	if err != nil {
 		l.Printf("Failed to opent the db, %v.\n", err)
@@ -21,6 +21,7 @@ func InitServer(address string, dbFile string) (*Backend, error) {
 
     engine := NewDynamicEngine([]string{
         "./static/",
+		"./frontend/",
 	}, ".html")
     app := fiber.New(fiber.Config{
         AppName: "Dating apps demo.",
@@ -33,7 +34,7 @@ func InitServer(address string, dbFile string) (*Backend, error) {
         engine:  engine,
         address: address,
         mode:    "http",
-		pass:    "password",
+		pass:    password,
     }, nil
 }
 
@@ -41,10 +42,7 @@ func InitAPIRoute(backend *Backend) {
 	app := backend.app
     api := app.Group("/api")
 
-    protected := api.Group("/p", jwtware.New(jwtware.Config{
-        SigningKey: jwtware.SigningKey{Key: []byte(backend.pass)},
-    }))
-	cookieJWT := api.Group("/c", jwtware.New(jwtware.Config{
+	cookieJWT := api.Group("/p", jwtware.New(jwtware.Config{
 		SigningKey:  jwtware.SigningKey{Key: []byte(backend.pass)},
 		TokenLookup: "cookie:jwt",
 		ContextKey:  "user",
@@ -52,4 +50,6 @@ func InitAPIRoute(backend *Backend) {
     app.Static("/static", "./static")
 
 	HandleUserRegister(backend, api)
+	HandleUserLogout(backend, cookieJWT)
+	HandleHello(backend, app)
 }
