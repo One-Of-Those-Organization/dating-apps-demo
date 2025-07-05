@@ -61,5 +61,9 @@ func InitAPIRoute(backend *Backend) {
 	HandleHobbyAdd(backend, api)
 	HandleHobbyInfoAll(backend, api)
 
-	HandleHello(backend, app)
+	// Frontend routes
+	IndexPage(backend, app)
+	LoginPage(backend, app)
+	RegisterPage(backend, app)
+	HomePage(backend, app)
 }

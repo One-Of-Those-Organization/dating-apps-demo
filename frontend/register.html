@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>Login Page</title>
+  </head>
+  <body>
+    <!-- Navbar Menu -->
+    <header
+      class="flex bg-pink-500 text-white p-4 justify-between items-center shadow-lg"
+    >
+      <h1 class="text-2xl font-bold tracking-wide">💖 Dating App</h1>
+      <nav class="bg-pink-500 p-4 flex items-center relative">
+        <div class="flex-1"></div>
+        <!-- Desktop menu -->
+        <ul class="hidden md:flex space-x-4">
+          <li>
+            <a
+              href="/register"
+              class="text-white border-2 border-white p-2 px-5 rounded-xl bg-blue-500 hover:bg-blue-600 transition"
+              >Sign Up</a
+            >
+          </li>
+          <li>
+            <a
+              href="/login"
+              class="text-pink-500 border-2 border-white p-2 px-5 rounded-xl bg-white hover:bg-pink-100 transition"
+              >Log In</a
+            >
+          </li>
+        </ul>
+        <!-- Hamburger Button (Mobile Only) -->
+        <button
+          id="menu-btn"
+          class="md:hidden flex items-center text-white text-3xl focus:outline-none ml-2 z-50"
+        >
+          <svg
+            class="w-8 h-8"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M4 6h16M4 12h16M4 18h16"
+            />
+          </svg>
+        </button>
+        <!-- Mobile Menu -->
+        <div
+          id="mobile-menu"
+          class="fixed top-0 right-0 h-full w-64 bg-white shadow-lg z-40 flex flex-col gap-4 p-8 transform translate-x-full transition-transform duration-300 md:hidden"
+        >
+          <p><strong class="text-pink-500 text-2xl">Main Menu</strong><br /></p>
+          <a
+            href="/register"
+            class="text-white border-2 border-white p-2 px-5 rounded-xl bg-blue-500 hover:bg-blue-600 transition"
+            >Sign Up</a
+          >
+          <a
+            href="/login"
+            class="text-pink-500 border-2 border-pink-500 p-2 px-5 rounded-xl bg-white hover:bg-pink-100 transition"
+            >Log In</a
+          >
+        </div>
+        <script>
+          const menuBtn = document.getElementById("menu-btn");
+          const mobileMenu = document.getElementById("mobile-menu");
+
+          menuBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            mobileMenu.classList.toggle("translate-x-full");
+          });
+
+          // Tutup menu saat klik di luar menu
+          document.addEventListener("click", function (event) {
+            if (
+              !menuBtn.contains(event.target) &&
+              !mobileMenu.contains(event.target)
+            ) {
+              mobileMenu.classList.add("translate-x-full");
+            }
+          });
+
+          // Tutup menu saat resize ke desktop
+          window.addEventListener("resize", () => {
+            if (window.innerWidth >= 768) {
+              mobileMenu.classList.add("translate-x-full");
+            }
+          });
+        </script>
+      </nav>
+    </header>
+
+    <div
+      class="max-w-md mx-auto mt-16 p-8 bg-white shadow-2xl rounded-3xl border border-pink-200"
+    >
+      <div class="flex flex-col items-center mb-8">
+        <div class="text-5xl mb-2">💖</div>
+        <h2 class="text-2xl font-bold text-pink-600 mb-1">
+          Start find your Partner
+        </h2>
+      </div>
+      <div>
+        <p class="text-red-500 font-semibold mb-2" id="error"></p>
+      </div>
+      <div class="mb-4">
+        <label for="username" class="block text-pink-700 font-semibold mb-2"
+          >Fullname
+        </label>
+        <input
+          type="text"
+          id="fullname"
+          name="fullname"
+          class="w-full border-2 border-pink-200 rounded-lg p-3 focus:outline-none focus:border-pink-400 transition text-pink-500"
+          placeholder="Enter your Full Name"
+          required
+        />
+      </div>
+      <div class="mb-4">
+        <label for="username" class="block text-pink-700 font-semibold mb-2"
+          >Username</label
+        >
+        <input
+          type="text"
+          id="name"
+          name="name"
+          class="w-full border-2 border-pink-200 rounded-lg p-3 focus:outline-none focus:border-pink-400 transition text-pink-500"
+          placeholder="Enter your Name"
+          required
+        />
+      </div>
+      <div class="mb-4">
+        <label for="username" class="block text-pink-700 font-semibold mb-2"
+          >Instance</label
+        >
+        <input
+          type="text"
+          id="instance"
+          name="instance"
+          class="w-full border-2 border-pink-200 rounded-lg p-3 focus:outline-none focus:border-pink-400 transition text-pink-500"
+          placeholder="Enter your Instance"
+          required
+        />
+      </div>
+      <div class="mb-4">
+        <label for="username" class="block text-pink-700 font-semibold mb-2"
+          >Age</label
+        >
+        <input
+          type="number"
+          id="age"
+          name="age"
+          class="w-full border-2 border-pink-200 rounded-lg p-3 focus:outline-none focus:border-pink-400 transition text-pink-500"
+          placeholder="Enter your Age"
+          required
+        />
+      </div>
+      <div class="mb-4">
+        <label for="gender" class="block text-pink-700 font-semibold mb-2"
+          >Gender</label
+        >
+        <select
+          id="gender"
+          name="gender"
+          class="w-full border-2 border-pink-200 rounded-lg p-3 focus:outline-none focus:border-pink-400 transition text-pink-500 bg-white"
+          required
+        >
+          <option value="" disabled selected>Select your gender</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </select>
+      </div>
+
+      <div class="mb-4">
+        <label for="username" class="block text-pink-700 font-semibold mb-2"
+          >Home</label
+        >
+        <input
+          type="text"
+          id="home"
+          name="home"
+          class="w-full border-2 border-pink-200 rounded-lg p-3 focus:outline-none focus:border-pink-400 transition text-pink-500"
+          placeholder="Enter your Address"
+          required
+        />
+      </div>
+      <div class="mb-4">
+        <label for="password" class="block text-pink-700 font-semibold mb-2"
+          >Password</label
+        >
+        <input
+          type="password"
+          id="password"
+          name="password"
+          class="w-full border-2 border-pink-200 rounded-lg p-3 focus:outline-none focus:border-pink-400 transition text-pink-500"
+          placeholder="Enter your password"
+          required
+        />
+      </div>
+      <div class="mb-4">
+        <label for="password" class="block text-pink-700 font-semibold mb-2"
+          >Confirm Password</label
+        >
+        <input
+          type="password"
+          id="Confirm-Password"
+          name="Confirm Password"
+          class="w-full border-2 border-pink-200 rounded-lg p-3 focus:outline-none focus:border-pink-400 transition text-pink-500"
+          placeholder="Enter your Confirm Password"
+          required
+        />
+      </div>
+      <button
+        type="submit"
+        class="w-full bg-pink-500 hover:bg-pink-600 transition font-bold py-3 rounded-xl text-white text-lg shadow-lg flex justify-center items-center"
+      >
+        <span class="mr-2">Log In</span>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M5 12h14M12 5l7 7-7 7"
+          />
+        </svg>
+      </button>
+      <p class="mt-6 text-center text-pink-500">
+        Don't have an account?
+        <a href="/register" class="font-bold text-pink-600 hover:underline"
+          >Sign Up</a
+        >
+      </p>
+    </div>
+  </body>
+  <script>
+    // Get elements
+    const error = document.getElementById("error");
+    const fullName = document.getElementById("fullname");
+    const name = document.getElementById("name");
+    const instance = document.getElementById("instance");
+    const age = document.getElementById("age");
+    const gender = document.getElementById("gender");
+    const home = document.getElementById("home");
+    const password = document.getElementById("password");
+    const confirmPassword = document.getElementById("Confirm-Password");
+
+    document
+      .querySelector("button[type='submit']")
+      .addEventListener("click", function (e) {
+        e.preventDefault(); // Prevent form submission
+
+        // Validate inputs
+        if (
+          fullName.value === "" ||
+          name.value === "" ||
+          instance.value === "" ||
+          age.value === "" ||
+          gender.value === "" ||
+          home.value === "" ||
+          password.value === ""
+        ) {
+          alert("Please fill in all fields.");
+          document.getElementById("error").innerText =
+            "Please fill in all fields.";
+          return;
+        } else if (password.value !== confirmPassword.value) {
+          error.innerText = "Passwords do not match.";
+          return;
+        } else if (!/^[a-zA-Z0-9]+$/.test(name.value)) {
+          error.innerText = "Name can only contain letters and numbers.";
+          return;
+        } else if (!/^[a-zA-Z0-9]+$/.test(instance.value)) {
+          error.innerText = "Instance can only contain letters and numbers.";
+          return;
+        } else {
+          error.innerText = ""; // Clear error message
+        }
+
+        let bytesGender = true; // Default
+        if (gender.value === "male") {
+          gender.value = false;
+        }
+
+        // Create a data object
+        const data = {
+          fullname: fullName.value,
+          name: name.value,
+          instance: instance.value,
+          age: Number(age.value),
+          gender: bytesGender,
+          home: home.value,
+          password: password.value,
+          hobbies: [],
+          interests: [],
+        };
+        const response = fetch("/api/user-register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
+        if (response.status === 200) {
+          window.location.href = "/login"; // Redirect to login page
+        } else {
+          error.innerText = "Registration failed. Please try again.";
+        }
+      });
+  </script>
+</html>
