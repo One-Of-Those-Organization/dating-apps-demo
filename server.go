@@ -8,8 +8,7 @@ import (
 	// "gorm.io/driver/sqlite"
 )
 
-func init_server() error {
-	const dbFile = "db/databse.sqlite"
+func InitServer(dbFile string) error {
 	db, err := ReadDB(dbFile)
 	if err != nil {
 		l.Printf("Failed to opent the db, %v.", err)
@@ -21,4 +20,7 @@ func init_server() error {
 		return err
 	}
 	return nil
+}
+
+func InitAPIRoute() {
 }

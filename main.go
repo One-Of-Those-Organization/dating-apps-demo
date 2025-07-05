@@ -1,5 +1,7 @@
 package main
 
 func main() {
-	_ = init_server()
+	const dbFile = "db/databse.sqlite"
+	_ = InitServer(dbFile)
+	InitAPIRoute()
 }
