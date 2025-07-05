@@ -3,23 +3,230 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link
+      href="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.jquery.min.js"></script>
     <title>Home</title>
+    <style>
+      /* Custom Chosen styling to better match Tailwind + Dating App vibes */
+      .chosen-container-multi .chosen-choices {
+        border-radius: 0.75rem !important; /* rounded-xl */
+        border-width: 2px !important;
+        border-color: #fbcfe8 !important; /* border-pink-200 */
+        padding: 0.5rem 0.75rem !important; /* p-3 */
+        min-height: 3rem;
+        background-color: #fff !important;
+        color: #ec4899 !important; /* text-pink-500 */
+        box-shadow: 0 2px 16px 0 rgba(236, 72, 153, 0.08);
+        font-size: 1rem;
+      }
+      .chosen-container-multi .chosen-choices li.search-choice {
+        background: #fbcfe8 !important; /* bg-pink-200 */
+        color: #db2777 !important; /* text-pink-600 */
+        border: 1px solid #f472b6 !important; /* border-pink-400 */
+        border-radius: 0.75rem !important;
+        padding: 0.25rem 0.75rem !important;
+        margin: 0.25rem 0.5rem 0.25rem 0 !important;
+        font-weight: 500;
+      }
+      .chosen-container .chosen-results li.highlighted {
+        background: #f472b6 !important; /* bg-pink-400 */
+        color: #fff !important;
+      }
+      .chosen-container .chosen-results li {
+        color: #ec4899 !important; /* text-pink-500 */
+        font-weight: 500;
+      }
+      .chosen-container-multi .chosen-choices input {
+        color: #ec4899 !important; /* text-pink-500 */
+      }
+      .chosen-container .chosen-drop {
+        border-radius: 0 0 0.75rem 0.75rem !important;
+        border-color: #fbcfe8 !important;
+        box-shadow: 0 2px 16px 0 rgba(236, 72, 153, 0.08);
+      }
+      .chosen-container-active .chosen-choices {
+        border-color: #f472b6 !important; /* focus:border-pink-400 */
+        box-shadow: 0 0 0 2px #fbcfe8;
+      }
+      /* Responsive: make sure Chosen fits container */
+      @media (max-width: 640px) {
+        .chosen-container {
+          width: 100% !important;
+        }
+      }
+    </style>
   </head>
-  <body>
-    <h1>Hi Edwin Alexander</h1>
+  <body class="bg-pink-50 min-h-screen">
+    <header
+      class="flex bg-pink-500 text-white p-4 justify-between items-center shadow-lg"
+    >
+      <h1 class="text-2xl font-bold tracking-wide">💖 Dating App</h1>
+      <nav class="bg-pink-500 p-4 flex items-center relative">
+        <div class="flex-1"></div>
+        <!-- Desktop menu -->
+        <ul class="hidden md:flex space-x-4">
+          <li>
+            <button
+              class="text-white border-2 border-white p-2 px-5 rounded-xl bg-red-500 hover:bg-blue-600 transition"
+              id="logout-btn"
+              onclick="logout()"
+            >
+              Logout
+            </button>
+          </li>
+        </ul>
+        <!-- Hamburger Button (Mobile Only) -->
+        <button
+          id="menu-btn"
+          class="md:hidden flex items-center text-white text-3xl focus:outline-none ml-2 z-50"
+        >
+          <svg
+            class="w-8 h-8"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M4 6h16M4 12h16M4 18h16"
+            />
+          </svg>
+        </button>
+        <!-- Mobile Menu -->
+        <div
+          id="mobile-menu"
+          class="fixed top-0 right-0 h-full w-64 bg-white shadow-lg z-40 flex flex-col gap-4 p-8 transform translate-x-full transition-transform duration-300 md:hidden"
+        >
+          <p><strong class="text-pink-500 text-2xl">Main Menu</strong><br /></p>
+          <button
+            class="text-pink-500 border-2 border-pink-500 p-2 px-5 rounded-xl bg-white hover:bg-pink-100 transition"
+            onclick="logout()"
+          >
+            Logout
+          </button>
+        </div>
+        <script>
+          const menuBtn = document.getElementById("menu-btn");
+          const mobileMenu = document.getElementById("mobile-menu");
+
+          menuBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            mobileMenu.classList.toggle("translate-x-full");
+          });
+
+          // Tutup menu saat klik di luar menu
+          document.addEventListener("click", function (event) {
+            if (
+              !menuBtn.contains(event.target) &&
+              !mobileMenu.contains(event.target)
+            ) {
+              mobileMenu.classList.add("translate-x-full");
+            }
+          });
+
+          // Tutup menu saat resize ke desktop
+          window.addEventListener("resize", () => {
+            if (window.innerWidth >= 768) {
+              mobileMenu.classList.add("translate-x-full");
+            }
+          });
+        </script>
+      </nav>
+    </header>
+    <main
+      class="max-w-md mx-auto mt-16 p-8 bg-white shadow-2xl rounded-3xl border border-pink-200"
+    >
+      <div class="flex flex-col items-center mb-8">
+        <div class="text-5xl mb-2">💖</div>
+        <h2 class="text-2xl font-bold text-pink-600 mb-1">
+          Tell us about your <span class="text-pink-400">Hobbies</span>
+        </h2>
+        <p class="text-md text-pink-400 mb-2 text-center">
+          Select your hobbies below so we can match you with like-minded people!
+        </p>
+      </div>
+      <form>
+        <div class="mb-6">
+          <label class="block text-pink-700 font-bold mb-3 text-lg" for="hobby"
+            >Your Hobbies</label
+          >
+          <select
+            id="hobby"
+            name="hobby"
+            class="chosen-select w-full"
+            multiple
+            data-placeholder="Choose your hobbies..."
+          >
+            <option value="reading">📚 Reading</option>
+            <option value="sports">🏀 Sports</option>
+            <option value="music">🎵 Music</option>
+            <option value="traveling">🌍 Traveling</option>
+            <option value="cooking">🍳 Cooking</option>
+            <option value="gaming">🎮 Gaming</option>
+            <option value="art">🎨 Art</option>
+            <option value="photography">📷 Photography</option>
+            <option value="movies">🎬 Movies</option>
+            <option value="dancing">💃 Dancing</option>
+          </select>
+          <p class="text-xs text-pink-400 mt-2">
+            Click to select multiple hobbies!
+          </p>
+        </div>
+        <button
+          type="submit"
+          class="w-full bg-pink-500 hover:bg-pink-600 transition font-bold py-3 rounded-xl text-white text-lg shadow-lg flex justify-center items-center"
+        >
+          <span class="mr-2">Save</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 12h14M12 5l7 7-7 7"
+            />
+          </svg>
+        </button>
+      </form>
+    </main>
   </body>
   <script>
-    function getCookie(name) {
-      const cookies = document.cookie.split("; ");
-      for (const c of cookies) {
-        const [key, val] = c.split("=");
-        if (key === name) return decodeURIComponent(val);
-      }
-      return null;
-    }
+    $(function () {
+      $(".chosen-select").chosen({
+        no_results_text: "Oops, nothing found!",
+        width: "100%",
+      });
+    });
 
-    // Example usage:
-    const jawa = getCookie("jwt");
-    console.log("JWT:", jawa);
+    function logout() {
+      fetch("/api/p/user-logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => {
+          if (response.status === 200) {
+            window.location.href = "/login";
+          } else {
+            alert("Logout failed. Please try again.");
+          }
+        })
+        .catch((error) => {
+          alert("An error occurred. Please try again. Please call your mom");
+        });
+    }
   </script>
 </html>

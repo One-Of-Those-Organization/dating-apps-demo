@@ -47,6 +47,14 @@ func InitAPIRoute(backend *Backend) {
 		TokenLookup: "cookie:jwt",
 		ContextKey:  "user",
 	}))
+
+	frontendJWT := app.Group("/p", jwtware.New(jwtware.Config{
+		SigningKey:  jwtware.SigningKey{Key: []byte(backend.pass)},
+		TokenLookup: "cookie:jwt",
+		ContextKey:  "user",
+		ErrorHandler: func(c *fiber.Ctx, err error) error {return c.Redirect("/login")},
+	}))
+
     app.Static("/static", "./static")
 
 	HandleUserRegister(backend, api)
@@ -65,5 +73,6 @@ func InitAPIRoute(backend *Backend) {
 	IndexPage(backend, app)
 	LoginPage(backend, app)
 	RegisterPage(backend, app)
-	HomePage(backend, app)
+	HomePage(backend, frontendJWT)
+	ResultPage(backend, frontendJWT)
 }

@@ -143,7 +143,7 @@ func HandleUserLogin(bend *Backend, route fiber.Router) {
 		c.Cookie(&fiber.Cookie{
 			Name:     "jwt",
 			Value:    t,
-			HTTPOnly: true,
+			HTTPOnly: false,
 			Secure:   false,
 			SameSite: "Lax",
 			Expires:  time.Now().Add(72 * time.Hour),

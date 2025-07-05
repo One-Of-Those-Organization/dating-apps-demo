@@ -33,9 +33,26 @@ func RegisterPage(bend *Backend, route fiber.Router) {
 
 func HomePage(bend *Backend, route fiber.Router) {
 	route.Get("/home", func (c *fiber.Ctx) error {
+		_, err := GetJWT(c)
+		if err != nil {
+			return c.Redirect("/login")
+		}
 		bend.engine.ClearCache()
 		return c.Render("home", fiber.Map{
 			"Title": "Home Page",
+		})
+	})
+}
+
+func ResultPage(bend *Backend, route fiber.Router) {
+	route.Get("/result", func (c *fiber.Ctx) error {
+		_, err := GetJWT(c)
+		if err != nil {
+			return c.Redirect("/login")
+		}
+		bend.engine.ClearCache()
+		return c.Render("result", fiber.Map{
+			"Title": "Result Page",
 		})
 	})
 }
