@@ -11,19 +11,24 @@ import (
 func HandleHobbyAdd(bend *Backend, route fiber.Router){
 	route.Post("hobby-add", func (c *fiber.Ctx) error {
 		var b struct {
-			Name string `json:"name"`
+			Hobbies []string `json:"hobbies"`
 		}
-
-		newHobby := table.Hobby{
-			Name: b.Name,
-		}
-
-		res := bend.db.Save(&newHobby)
-		if res.Error != nil {
-			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-				"code": fiber.StatusInternalServerError,
-				"data": fmt.Sprintf("There is a problem when trying to get the db, %v.", res.Error),
+		if err := c.BodyParser(&b); err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"code": fiber.StatusBadRequest,
+				"data": "Invalid request body",
 			})
+		}
+
+		for _, h := range b.Hobbies {
+			newHobby := table.Hobby{Name: h}
+			res := bend.db.Save(&newHobby)
+			if res.Error != nil {
+				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+					"code": fiber.StatusInternalServerError,
+					"data": fmt.Sprintf("There is a problem when trying to save the db, %v.", res.Error),
+				})
+			}
 		}
 
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -33,11 +38,11 @@ func HandleHobbyAdd(bend *Backend, route fiber.Router){
 	})
 }
 
-// GET: api/interest-info-all
+// GET: api/hobby-info-all
 func HandleHobbyInfoAll(bend *Backend, route fiber.Router){
 	route.Get("hobby-info-all", func (c *fiber.Ctx) error {
-		var allInterst []table.Hobby
-		res := bend.db.Find(&allInterst)
+		var allHobbies []table.Hobby
+		res := bend.db.Find(&allHobbies)
 		if res.Error != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 				"code": fiber.StatusInternalServerError,
@@ -47,7 +52,7 @@ func HandleHobbyInfoAll(bend *Backend, route fiber.Router){
 
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
 			"code": fiber.StatusOK,
-			"data": allInterst,
+			"data": allHobbies,
 		})
 	})
 }

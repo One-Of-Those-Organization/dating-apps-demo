@@ -11,19 +11,26 @@ import (
 func HandleInterestAdd(bend *Backend, route fiber.Router){
 	route.Post("interest-add", func (c *fiber.Ctx) error {
 		var b struct {
-			Name string `json:"name"`
+			Interests []string `json:"interests"`
 		}
-
-		newInterest := table.Interest{
-			Name: b.Name,
-		}
-
-		res := bend.db.Save(&newInterest)
-		if res.Error != nil {
-			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-				"code": fiber.StatusInternalServerError,
-				"data": fmt.Sprintf("There is a problem when trying to get the db, %v.", res.Error),
+		if err := c.BodyParser(&b); err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"code": fiber.StatusBadRequest,
+				"data": "Invalid request body",
 			})
+		}
+
+		for _, name := range b.Interests {
+			newInterest := table.Interest{
+				Name: name,
+			}
+			res := bend.db.Save(&newInterest)
+			if res.Error != nil {
+				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+					"code": fiber.StatusInternalServerError,
+					"data": fmt.Sprintf("There is a problem when trying to save to db, %v.", res.Error),
+				})
+			}
 		}
 
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{

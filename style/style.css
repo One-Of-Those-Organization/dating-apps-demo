@@ -1,0 +1,129 @@
+/* Custom Chosen styling to better match Tailwind + Dating App vibes */
+.chosen-container-multi .chosen-choices {
+  border-radius: 0.75rem !important; /* rounded-xl */
+  border-width: 2px !important;
+  border-color: #fbcfe8 !important; /* border-pink-200 */
+  padding: 0.5rem 0.75rem !important; /* p-3 */
+  min-height: 3rem;
+  background-color: #fff !important;
+  color: #ec4899 !important; /* text-pink-500 */
+  box-shadow: 0 2px 16px 0 rgba(236, 72, 153, 0.08);
+  font-size: 1rem;
+}
+
+/* Per-chip style for each selected item - FIXED VERSION */
+.chosen-container-multi .chosen-choices li.search-choice {
+  background: #fbcfe8 !important;
+  color: #db2777 !important;
+  border: 1px solid #f472b6 !important;
+  border-radius: 0.75rem !important;
+  padding: 0.25rem 0.75rem 0.25rem 0.75rem !important;
+  margin: 0.25rem 0.5rem 0.25rem 0 !important;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  min-height: 2rem;
+  line-height: 1.5;
+  position: relative;
+}
+
+/* Fix for Chosen close (×) icon - CENTERED RIGHT */
+.chosen-container-multi .chosen-choices li.search-choice .search-choice-close {
+  font-size: 1.15rem;
+  color: #ec4899;
+  opacity: 0.8;
+  cursor: pointer;
+  background: transparent;
+  border-radius: 50%;
+  transition: background 0.15s;
+  padding: 0.15em 0.4em;
+  line-height: 1;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+.chosen-container-multi
+  .chosen-choices
+  li.search-choice
+  .search-choice-close::after {
+  content: "×";
+  font-size: 1.15rem;
+  color: #ec4899;
+  display: inline-block;
+}
+.chosen-container-multi
+  .chosen-choices
+  li.search-choice
+  .search-choice-close:hover::after {
+  background: #f472b6;
+  color: white;
+  opacity: 1;
+  border-radius: 50%;
+}
+
+/* Dropdown highlighting */
+.chosen-container .chosen-results li.highlighted {
+  background: #f472b6 !important; /* bg-pink-400 */
+  color: #fff !important;
+}
+.chosen-container .chosen-results li {
+  color: #ec4899 !important; /* text-pink-500 */
+  font-weight: 500;
+}
+.chosen-container-multi .chosen-choices input {
+  color: #ec4899 !important; /* text-pink-500 */
+}
+.chosen-container .chosen-drop {
+  border-radius: 0 0 0.75rem 0.75rem !important;
+  border-color: #fbcfe8 !important;
+  box-shadow: 0 2px 16px 0 rgba(236, 72, 153, 0.08);
+}
+.chosen-container-active .chosen-choices {
+  border-color: #f472b6 !important; /* focus:border-pink-400 */
+  box-shadow: 0 0 0 2px #fbcfe8;
+}
+
+/* Single select styling */
+.chosen-container-single .chosen-single {
+  border-radius: 0.75rem !important;
+  border-width: 2px !important;
+  border-color: #fbcfe8 !important;
+  color: #ec4899 !important;
+  background: #fff !important;
+  padding: 0.5rem 0.75rem !important;
+  font-size: 1rem;
+  font-weight: 500;
+}
+.chosen-container-single .chosen-single span {
+  color: #ec4899 !important;
+}
+
+/* Responsive: make sure Chosen fits container */
+@media (max-width: 640px) {
+  .chosen-container {
+    width: 100% !important;
+  }
+}
+
+/* Card and button enhancements (for full dating app vibes) */
+/* HANYA APPLY KE HALAMAN DATING APP - LEBIH SPESIFIK */
+.dating-app-page body {
+  background: #ffe4ef !important; /* pink-50 */
+}
+.dating-app-page main {
+  background: #fff !important;
+  border-radius: 1.5rem !important; /* rounded-3xl */
+  border: 1px solid #fbcfe8 !important; /* border-pink-200 */
+  box-shadow: 0 8px 36px 0 rgba(236, 72, 153, 0.12) !important;
+}
+.dating-app-page header {
+  background: linear-gradient(90deg, #ec4899 0%, #f472b6 100%) !important;
+}
+.dating-app-page button,
+.dating-app-page .btn {
+  transition: background 0.2s, color 0.2s;
+}
+.dating-app-page button:active,
+.dating-app-page .btn:active {
+  filter: brightness(0.95);
+}

@@ -56,6 +56,8 @@ func InitAPIRoute(backend *Backend) {
 	}))
 
     app.Static("/static", "./static")
+	app.Static("/style", "./style")
+	app.Static("/frontend", "./frontend")
 
 	HandleUserRegister(backend, api)
 	HandleUserLogin(backend, api)
