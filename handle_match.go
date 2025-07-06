@@ -2,9 +2,16 @@ package main
 
 import (
 	"dating-apps/table"
+	"encoding/json"
+	"fmt"
 	"math"
 	"math/rand"
+	"net/http"
+	"net/url"
 	"sort"
+	"strconv"
+	"strings"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
@@ -23,18 +30,147 @@ type MatchResult struct {
 	CompatibilityScore float64   `json:"compatibility_score"`
 }
 
+// Nominatim API response structure
+type NominatimResponse struct {
+	PlaceID     int      `json:"place_id"`
+	DisplayName string   `json:"display_name"`
+	Lat         string   `json:"lat"`
+	Lon         string   `json:"lon"`
+}
+
+// LocationData holds geocoded location information
+type LocationData struct {
+	Lat         float64
+	Lon         float64
+}
+
+// Cache for geocoded locations to avoid repeated API calls
+var locationCache = make(map[string]LocationData)
+
+// Geocode location using Nominatim API
+func geocodeLocation(location string) (LocationData, error) {
+	// Check cache first
+	if cached, exists := locationCache[strings.ToLower(location)]; exists {
+		return cached, nil
+	}
+
+	// Prepare URL
+	baseURL := "https://nominatim.openstreetmap.org/search"
+	params := url.Values{}
+	params.Add("q", location)
+	params.Add("format", "json")
+	params.Add("polygon", "1")
+	params.Add("addressdetails", "1")
+	params.Add("limit", "1")
+
+	fullURL := fmt.Sprintf("%s?%s", baseURL, params.Encode())
+
+	// Create HTTP client with timeout
+	client := &http.Client{
+		Timeout: 5 * time.Second,
+	}
+
+	// Make request
+	resp, err := client.Get(fullURL)
+	if err != nil {
+		return LocationData{}, err
+	}
+	defer resp.Body.Close()
+
+	// Parse response
+	var results []NominatimResponse
+	if err := json.NewDecoder(resp.Body).Decode(&results); err != nil {
+		return LocationData{}, err
+	}
+
+	if len(results) == 0 {
+		return LocationData{}, fmt.Errorf("no results found for location: %s", location)
+	}
+
+	result := results[0]
+
+	// Parse coordinates
+	lat, err := strconv.ParseFloat(result.Lat, 64)
+	if err != nil {
+		return LocationData{}, err
+	}
+
+	lon, err := strconv.ParseFloat(result.Lon, 64)
+	if err != nil {
+		return LocationData{}, err
+	}
+
+	locationData := LocationData{
+		Lat:         lat,
+		Lon:         lon,
+	}
+
+	// Cache the result
+	locationCache[strings.ToLower(location)] = locationData
+
+	return locationData, nil
+}
+
+// Calculate distance between two coordinates using Haversine formula
+func calculateDistance(lat1, lon1, lat2, lon2 float64) float64 {
+	const R = 6371 // Earth's radius in kilometers
+
+	dLat := (lat2 - lat1) * math.Pi / 180
+	dLon := (lon2 - lon1) * math.Pi / 180
+
+	a := math.Sin(dLat/2)*math.Sin(dLat/2) +
+		math.Cos(lat1*math.Pi/180)*math.Cos(lat2*math.Pi/180)*
+			math.Sin(dLon/2)*math.Sin(dLon/2)
+
+	c := 2 * math.Atan2(math.Sqrt(a), math.Sqrt(1-a))
+	distance := R * c
+
+	return distance
+}
+
+// Calculate location compatibility score based on distance
+func calculateLocationScore(userA, userB table.User) float64 {
+	// If locations are exactly the same, give full score
+	if strings.EqualFold(userA.Home, userB.Home) {
+		return 30.0
+	}
+
+	// Try to geocode both locations
+	locationA, errA := geocodeLocation(userA.Home)
+	locationB, errB := geocodeLocation(userB.Home)
+
+	// If geocoding fails, fall back to string comparison
+	if errA != nil || errB != nil {
+		if userA.Home == userB.Home {
+			return 30.0
+		}
+		return 0.0
+	}
+
+	// Calculate distance between locations
+	distance := calculateDistance(locationA.Lat, locationA.Lon, locationB.Lat, locationB.Lon)
+
+	// Convert distance to score (closer = higher score)
+	// Score decreases exponentially with distance
+	// Max score: 30, decreases to near 0 at 100km+
+	score := 30.0 * math.Exp(-distance/50.0)
+
+	return score
+}
+
 func calculateFitness(userA, userB table.User) float64 {
 	var score float64 = 0
 
+	// Age compatibility (20% weight)
 	ageDiff := math.Abs(float64(userA.Age - userB.Age))
 	ageScore := math.Max(0, 100-ageDiff*5)
 	score += ageScore * 0.2
 
-	// NOTE: Need to be changed later.
-	if userA.Home == userB.Home {
-		score += 30
-	}
+	// Location compatibility using distance-based scoring
+	locationScore := calculateLocationScore(userA, userB)
+	score += locationScore
 
+	// Shared hobbies (25% weight)
 	sharedHobbies := countSharedItems(userA.Hobbies, userB.Hobbies)
 	totalHobbies := len(userA.Hobbies) + len(userB.Hobbies)
 	if totalHobbies > 0 {
@@ -42,6 +178,7 @@ func calculateFitness(userA, userB table.User) float64 {
 		score += hobbyScore * 0.25
 	}
 
+	// Shared interests (25% weight)
 	sharedInterests := countSharedInterests(userA.Interests, userB.Interests)
 	totalInterests := len(userA.Interests) + len(userB.Interests)
 	if totalInterests > 0 {
@@ -49,6 +186,7 @@ func calculateFitness(userA, userB table.User) float64 {
 		score += interestScore * 0.25
 	}
 
+	// Gender diversity bonus
 	if userA.Gender != userB.Gender {
 		score += 10
 	}
@@ -344,6 +482,7 @@ func HandleMatchmake(bend *Backend, route fiber.Router) {
 
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
 			"code":    fiber.StatusOK,
+			"message": "Matchmaking completed successfully",
 			"data":    matches,
 		})
 	})
