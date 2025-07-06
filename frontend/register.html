@@ -107,6 +107,7 @@
         <h2 class="text-2xl font-bold text-pink-600 mb-1">
           Start find your Partner
         </h2>
+        <p class="text-md text-pink-400">Sign up and find your match</p>
       </div>
       <div>
         <p class="text-red-500 font-semibold mb-2" id="error"></p>
@@ -293,9 +294,11 @@
           error.innerText = ""; // Clear error message
         }
 
-        let bytesGender = true; // Default
+        let bytesGender;
         if (gender.value === "male") {
           gender.value = false;
+        } else if (gender.value === "female") {
+          gender.value = true;
         }
 
         // Create a data object
@@ -310,6 +313,7 @@
           hobbies: [],
           interests: [],
         };
+        console.log("Data to be sent:", data);
         const response = fetch("/api/user-register", {
           method: "POST",
           headers: {
@@ -319,6 +323,7 @@
         }).then((response) => {
           if (response.status === 200) {
             window.location.href = "/login";
+            console.log("Data sended to backend:", data);
           } else {
             error.innerText = "Registration failed. Please try again.";
           }

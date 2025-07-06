@@ -399,4 +399,23 @@ func HandleUserInfo(bend *Backend, route fiber.Router) {
 	})
 }
 
+// GET: api/p/user-status
+func HandleUserStatus(bend *Backend, route fiber.Router) {
+    route.Get("user-status", func(c *fiber.Ctx) error {
+        claims, err := GetJWT(c)
+        if err != nil {
+            return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+                "logged_in": false,
+            })
+        }
+        // Misal claim["name"] sudah cukup, atau tambahkan field lain jika mau
+        return c.JSON(fiber.Map{
+            "logged_in": true,
+            "user": fiber.Map{
+                "name": claims["name"],
+            },
+        })
+    })
+}
+
 // NOTE: DONT HAVE : user-delete, user-info-all

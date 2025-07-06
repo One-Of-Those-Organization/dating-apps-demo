@@ -198,53 +198,57 @@
     </footer>
   </body>
   <script>
-    // Function to get cookie value by name for checking login status and updating navbar
-    function getCookie(name) {
-      const cookies = document.cookie.split("; ");
-      for (const c of cookies) {
-        const [key, val] = c.split("=");
-        if (key === name) return decodeURIComponent(val);
-      }
-      return null;
-    }
-
     function updateNavbar() {
-      const jwtCookie = getCookie("jwt");
-      const isLoggedIn = jwtCookie && jwtCookie.trim() !== "";
+      fetch("/api/p/user-status", { credentials: "include" })
+        .then((res) => res.json())
+        .then((data) => {
+          const isLoggedIn = !!data.logged_in;
 
-      if (isLoggedIn) {
-        // User is logged in - show logout button
-        document.getElementById("guest-signup").style.display = "none";
-        document.getElementById("guest-login").style.display = "none";
-        document.getElementById("user-logout").style.display = "block";
-
-        // Mobile
-        document.getElementById("mobile-guest-signup").style.display = "none";
-        document.getElementById("mobile-guest-login").style.display = "none";
-        document.getElementById("mobile-user-logout").style.display = "block";
-
-        // Update CTA buttons
-        document.getElementById("cta-button").href = "/p/home";
-        document.getElementById("cta-button").textContent = "Go to Home";
-        document.getElementById("cta-button-2").href = "/p/home";
-        document.getElementById("cta-button-2").textContent = "Go to Home";
-      } else {
-        // User is NOT logged in - show login/register buttons
-        document.getElementById("guest-signup").style.display = "block";
-        document.getElementById("guest-login").style.display = "block";
-        document.getElementById("user-logout").style.display = "none";
-
-        // Mobile
-        document.getElementById("mobile-guest-signup").style.display = "block";
-        document.getElementById("mobile-guest-login").style.display = "block";
-        document.getElementById("mobile-user-logout").style.display = "none";
-
-        // Keep original CTA buttons
-        document.getElementById("cta-button").href = "/register";
-        document.getElementById("cta-button").textContent = "Get Started";
-        document.getElementById("cta-button-2").href = "/register";
-        document.getElementById("cta-button-2").textContent = "Join Now";
-      }
+          // Desktop
+          document.getElementById("guest-signup").style.display = isLoggedIn
+            ? "none"
+            : "block";
+          document.getElementById("guest-login").style.display = isLoggedIn
+            ? "none"
+            : "block";
+          document.getElementById("user-logout").style.display = isLoggedIn
+            ? "block"
+            : "none";
+          // Mobile
+          document.getElementById("mobile-guest-signup").style.display =
+            isLoggedIn ? "none" : "block";
+          document.getElementById("mobile-guest-login").style.display =
+            isLoggedIn ? "none" : "block";
+          document.getElementById("mobile-user-logout").style.display =
+            isLoggedIn ? "block" : "none";
+          // CTA Buttons
+          document.getElementById("cta-button").href = isLoggedIn
+            ? "/p/home"
+            : "/register";
+          document.getElementById("cta-button").textContent = isLoggedIn
+            ? "Go to Home"
+            : "Get Started";
+          document.getElementById("cta-button-2").href = isLoggedIn
+            ? "/p/home"
+            : "/register";
+          document.getElementById("cta-button-2").textContent = isLoggedIn
+            ? "Go to Home"
+            : "Join Now";
+        })
+        .catch((error) => {
+          // Jika gagal, fallback ke guest mode
+          document.getElementById("guest-signup").style.display = "block";
+          document.getElementById("guest-login").style.display = "block";
+          document.getElementById("user-logout").style.display = "none";
+          document.getElementById("mobile-guest-signup").style.display =
+            "block";
+          document.getElementById("mobile-guest-login").style.display = "block";
+          document.getElementById("mobile-user-logout").style.display = "none";
+          document.getElementById("cta-button").href = "/register";
+          document.getElementById("cta-button").textContent = "Get Started";
+          document.getElementById("cta-button-2").href = "/register";
+          document.getElementById("cta-button-2").textContent = "Join Now";
+        });
     }
 
     function handleLogout() {
@@ -253,6 +257,7 @@
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
       })
         .then((response) => {
           if (response.status === 200) {

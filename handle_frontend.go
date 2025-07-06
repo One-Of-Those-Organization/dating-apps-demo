@@ -15,6 +15,10 @@ func IndexPage(bend *Backend, route fiber.Router) {
 
 func LoginPage(bend *Backend, route fiber.Router) {
 	route.Get("/login", func (c *fiber.Ctx) error {
+		if IsLoggedIn(c, bend.pass) {
+			return c.Redirect("/p/home")
+		}
+
 		bend.engine.ClearCache()
 		return c.Render("login", fiber.Map{
 			"Title": "Login",
@@ -24,6 +28,10 @@ func LoginPage(bend *Backend, route fiber.Router) {
 
 func RegisterPage(bend *Backend, route fiber.Router) {
 	route.Get("/register", func (c *fiber.Ctx) error {
+		if IsLoggedIn(c, bend.pass) {
+			return c.Redirect("/p/home")
+		}
+
 		bend.engine.ClearCache()
 		return c.Render("register", fiber.Map{
 			"Title": "Register",
