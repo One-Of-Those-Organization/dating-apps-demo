@@ -209,57 +209,49 @@
 
       // Function handle save hobbies and interests
       function handleSave() {
-        const hobby = document.getElementById("hobby");
-        const interest = document.getElementById("interest");
-        const saveBtn = document.getElementById("save-btn");
+          const hobby = document.getElementById("hobby");
+          const interest = document.getElementById("interest");
+          const saveBtn = document.getElementById("save-btn");
 
-        const selectedHobbies = Array.from(hobby.selectedOptions).map(
-          (opt) => opt.value
-        );
-        const selectedInterests = Array.from(interest.selectedOptions).map(
-          (opt) => opt.value
-        );
+          const selectedHobbies = Array.from(hobby.selectedOptions).map(
+              (opt) => opt.value
+          );
+          const selectedInterests = Array.from(interest.selectedOptions).map(
+              (opt) => opt.value
+          );
+          console.log(selectedHobbies)
 
-        // Validation: Check if user selected at least one hobby or interest
-        if (selectedHobbies.length === 0 && selectedInterests.length === 0) {
-          alert("Please select at least one hobby or interest!");
-          return;
-        }
+          // Validation: Check if user selected at least one hobby or interest
+          if (selectedHobbies.length === 0 && selectedInterests.length === 0) {
+              alert("Please select at least one hobby or interest!");
+              return;
+          }
 
-        // Disable button dan show loading
-        saveBtn.disabled = true;
-        saveBtn.innerHTML = '<span class="mr-2">Saving...</span>';
+          // Disable button dan show loading
+          saveBtn.disabled = true;
+          saveBtn.innerHTML = '<span class="mr-2">Saving...</span>';
 
-        // Kirim Hobby
-        fetch("/api/hobby-add", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ hobbies: selectedHobbies }),
-        })
-          .then((response) => {
-            if (!response.ok) throw new Error("Failed to save hobbies");
-            // Kirim Interest setelah Hobby sukses
-            return fetch("/api/interest-add", {
+          fetch("/api/p/user-edit", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ interests: selectedInterests }),
-            });
-          })
-          .then((response) => {
-            if (response.ok) {
-              // Success - redirect ke result
-              window.location.href = "/p/result";
-            } else {
-              throw new Error("Failed to save interests");
-            }
-          })
-          .catch((error) => {
-            console.error("Error saving data:", error);
-            alert("An error occurred while saving. Please try again.");
+              body: JSON.stringify(
+                  {
+                      hobbies: selectedHobbies,
+                      interests: selectedInterests,
+                  }
+              ),
+          }).then((response) => {
+              if (response.status == 200) {
+//                  window.location.href = "/p/result";
+              } else {
+                  throw new Error("Failed to save the new user data.");
+              }
+          }).catch((error) => {
+              alert("An error occurred while saving. Please try again.");
 
-            // Reset button
-            saveBtn.disabled = false;
-            saveBtn.innerHTML = `
+              // Reset button
+              saveBtn.disabled = false;
+              saveBtn.innerHTML = `
               <span class="mr-2">Save</span>
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M12 5l7 7-7 7" />

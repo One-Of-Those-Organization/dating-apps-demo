@@ -79,7 +79,7 @@ func HandleUserRegister(bend *Backend, route fiber.Router){
 		var interests []table.Interest
 		for _, InterestInput := range b.Interests {
 			var h table.Interest
-			err := bend.db.Where("hobby_name = ?", InterestInput.Name).First(&h).Error
+			err := bend.db.Where("interest_name = ?", InterestInput.Name).First(&h).Error
 			if err != nil {
 				if errors.Is(err, gorm.ErrRecordNotFound) {
 					h = table.Interest{Name: InterestInput.Name}
@@ -232,22 +232,24 @@ func HandleUserEdit(bend *Backend, route fiber.Router){
 		}
 		name := claims["name"].(string)
 		var b struct {
-			FullName *string  `json:"fullname"`
-			Instance *string  `json:"instance"`
-			Age      *int     `json:"age"`
-			Biodata  *string  `json:"biodata"`
-			Password *string  `json:"password"`
-			Home     *string  `json:"home"`
+			FullName *string   `json:"fullname"`
+			Instance *string   `json:"instance"`
+			Age      *int      `json:"age"`
+			Biodata  *string   `json:"biodata"`
+			Password *string   `json:"password"`
+			Home     *string   `json:"home"`
 
-			Hobbies   []table.Hobby    `json:"hobbies"`
-			Interests []table.Interest `json:"interests"`
+			Hobbies   []string `json:"hobbies"`
+			Interests []string `json:"interests"`
+			// Hobbies   []table.Hobby    `json:"hobbies"`
+			// Interests []table.Interest `json:"interests"`
 		}
 
 		err = c.BodyParser(&b)
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"code": fiber.StatusBadRequest,
-				"data": "Bad Request body.",
+				"data": fmt.Sprintf("Bad Request body, %v.", err),
 			})
 		}
 
@@ -269,10 +271,10 @@ func HandleUserEdit(bend *Backend, route fiber.Router){
 		var hobbies []table.Hobby
 		for _, hobbyInput := range b.Hobbies {
 			var h table.Hobby
-			err := bend.db.Where("hobby_name = ?", hobbyInput.Name).First(&h).Error
+			err := bend.db.Where("hobby_name = ?", hobbyInput).First(&h).Error
 			if err != nil {
 				if errors.Is(err, gorm.ErrRecordNotFound) {
-					h = table.Hobby{Name: hobbyInput.Name}
+					h = table.Hobby{Name: hobbyInput}
 					if err := bend.db.Create(&h).Error; err != nil {
 						return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 							"code": fiber.StatusInternalServerError,
@@ -292,10 +294,10 @@ func HandleUserEdit(bend *Backend, route fiber.Router){
 		var interests []table.Interest
 		for _, InterestInput := range b.Interests {
 			var h table.Interest
-			err := bend.db.Where("hobby_name = ?", InterestInput.Name).First(&h).Error
+			err := bend.db.Where("interest_name = ?", InterestInput).First(&h).Error
 			if err != nil {
 				if errors.Is(err, gorm.ErrRecordNotFound) {
-					h = table.Interest{Name: InterestInput.Name}
+					h = table.Interest{Name: InterestInput}
 					if err := bend.db.Create(&h).Error; err != nil {
 						return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 							"code": fiber.StatusInternalServerError,
@@ -377,7 +379,7 @@ func HandleUserInfo(bend *Backend, route fiber.Router) {
 		name := claims["name"].(string)
 
 		var user table.User
-		res := bend.db.Preload("Hobby").Preload("Interest").Where("user_name = ?", name).First(&user)
+		res := bend.db.Preload("Hobbies").Preload("Interests").Where("user_name = ?", name).First(&user)
 		if res.Error != nil {
 			if errors.Is(res.Error, gorm.ErrRecordNotFound) {
 				return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
