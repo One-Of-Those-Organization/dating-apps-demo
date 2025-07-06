@@ -189,7 +189,7 @@ func calculateFitness(userA, userB table.User) float64 {
 	// Gender diversity bonus
 	if userA.Gender != userB.Gender {
 		score += 10
-	}
+	} else { score -= 1e12 }
 
 	return score
 }
