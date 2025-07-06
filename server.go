@@ -5,7 +5,6 @@ import (
 
 	jwtware "github.com/gofiber/contrib/jwt"
 	"github.com/gofiber/fiber/v2"
-	"github.com/golang-jwt/jwt/v5"
 )
 
 func InitServer(address string, dbFile string, password string) (*Backend, error) {
@@ -38,20 +37,6 @@ func InitServer(address string, dbFile string, password string) (*Backend, error
     }, nil
 }
 
-func IsLoggedIn(c *fiber.Ctx, secret string) bool {
-    cookie := c.Cookies("jwt")
-    if cookie == "" {
-        return false
-    }
-    token, err := jwt.Parse(cookie, func(token *jwt.Token) (interface{}, error) {
-        return []byte(secret), nil
-    })
-    if err != nil || !token.Valid {
-        return false
-    }
-    return true
-}
-
 func InitAPIRoute(backend *Backend) {
 	app := backend.app
     api := app.Group("/api")
@@ -76,7 +61,7 @@ func InitAPIRoute(backend *Backend) {
 	HandleUserEdit(backend, cookieJWT)
 	HandleUserInfo(backend, cookieJWT)
 	HandleUserLogout(backend, cookieJWT)
-	HandleUserStatus(backend, cookieJWT)
+	// HandleUserStatus(backend, cookieJWT)
 
 	HandleInterestInfoAll(backend, api)
 

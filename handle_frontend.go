@@ -6,35 +6,39 @@ import (
 
 func IndexPage(bend *Backend, route fiber.Router) {
 	route.Get("/", func (c *fiber.Ctx) error {
+		logged := IsLoggedIn(c, bend.pass)
+
 		bend.engine.ClearCache()
 		return c.Render("index", fiber.Map{
-			"Halo": "Dunia",
+			"LoggedIn": logged,
 		})
 	})
 }
 
 func LoginPage(bend *Backend, route fiber.Router) {
 	route.Get("/login", func (c *fiber.Ctx) error {
-		if IsLoggedIn(c, bend.pass) {
+		logged := IsLoggedIn(c, bend.pass)
+		if logged {
 			return c.Redirect("/p/home")
 		}
 
 		bend.engine.ClearCache()
 		return c.Render("login", fiber.Map{
-			"Title": "Login",
+			"LoggedIn": logged,
 		})
 	})
 }
 
 func RegisterPage(bend *Backend, route fiber.Router) {
 	route.Get("/register", func (c *fiber.Ctx) error {
-		if IsLoggedIn(c, bend.pass) {
+		logged := IsLoggedIn(c, bend.pass)
+		if logged {
 			return c.Redirect("/p/home")
 		}
 
 		bend.engine.ClearCache()
 		return c.Render("register", fiber.Map{
-			"Title": "Register",
+			"LoggedIn": logged,
 		})
 	})
 }
@@ -47,9 +51,7 @@ func HomePage(bend *Backend, route fiber.Router) {
 		}
 		
 		bend.engine.ClearCache()
-		return c.Render("home", fiber.Map{
-			"Title": "Home Page",
-		})
+		return c.Render("home", fiber.Map{})
 	})
 }
 

@@ -39,3 +39,16 @@ func GetJWT(c *fiber.Ctx) (jwt.MapClaims, error) {
     return claims, nil
 }
 
+func IsLoggedIn(c *fiber.Ctx, secret string) bool {
+    cookie := c.Cookies("jwt")
+    if cookie == "" {
+        return false
+    }
+    token, err := jwt.Parse(cookie, func(token *jwt.Token) (interface{}, error) {
+        return []byte(secret), nil
+    })
+    if err != nil || !token.Valid {
+        return false
+    }
+    return true
+}

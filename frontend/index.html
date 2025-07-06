@@ -199,11 +199,8 @@
   </body>
   <script>
     function updateNavbar() {
-      fetch("/api/p/user-status", { credentials: "include" })
-        .then((res) => res.json())
-        .then((data) => {
-          const isLoggedIn = !!data.logged_in;
-
+        const isLoggedIn = {{ .LoggedIn }};
+        if (isLoggedIn) {
           // Desktop
           document.getElementById("guest-signup").style.display = isLoggedIn
             ? "none"
@@ -234,8 +231,7 @@
           document.getElementById("cta-button-2").textContent = isLoggedIn
             ? "Go to Home"
             : "Join Now";
-        })
-        .catch((error) => {
+        } else {
           // Jika gagal, fallback ke guest mode
           document.getElementById("guest-signup").style.display = "block";
           document.getElementById("guest-login").style.display = "block";
@@ -248,7 +244,7 @@
           document.getElementById("cta-button").textContent = "Get Started";
           document.getElementById("cta-button-2").href = "/register";
           document.getElementById("cta-button-2").textContent = "Join Now";
-        });
+        };
     }
 
     function handleLogout() {
