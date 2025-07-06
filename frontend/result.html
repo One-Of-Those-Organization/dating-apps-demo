@@ -170,7 +170,7 @@
 
           // Card Matchmaking Results
           if (!matchRes.data || matchRes.data.length === 0) {
-            html += `<div class="text-pink-600 text-center">No matches found.</div>`;
+            html += `<div class="text-pink-600 text-center">💔 No match(es) found. 💔</div>`;
           } else {
             matchRes.data.forEach((match) => {
               const user = match.user;

@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"net/http"
 	"net/url"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -479,6 +480,17 @@ func HandleMatchmake(bend *Backend, route fiber.Router) {
 
 		// Run genetic algorithm
 		matches := runGeneticAlgorithm(currentUser, allUsers, 50)
+
+		var deletionList []int
+		for i, m := range matches {
+			if m.CompatibilityScore <= 0 {
+				deletionList = append(deletionList, i)
+			}
+		}
+		slices.Reverse(deletionList)
+		for i := range deletionList {
+			matches = append(matches[:i], matches[i+1:]...)
+		}
 
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
 			"code":    fiber.StatusOK,
