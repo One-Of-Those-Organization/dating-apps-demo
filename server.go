@@ -20,7 +20,6 @@ func InitServer(address string, dbFile string, password string) (*Backend, error
 	}
 
     engine := NewDynamicEngine([]string{
-        "./static/",
 		"./frontend/",
 	}, ".html")
     app := fiber.New(fiber.Config{
@@ -52,12 +51,10 @@ func InitAPIRoute(backend *Backend) {
 		SigningKey:  jwtware.SigningKey{Key: []byte(backend.pass)},
 		TokenLookup: "cookie:jwt",
 		ContextKey:  "user",
-		ErrorHandler: func(c *fiber.Ctx, err error) error {return c.Redirect("/login")},
+		ErrorHandler: func(c *fiber.Ctx, err error) error { return c.Redirect("/login") },
 	}))
 
-    app.Static("/static", "./static")
 	app.Static("/style", "./style")
-	app.Static("/frontend", "./frontend")
 
 	HandleUserRegister(backend, api)
 	HandleUserLogin(backend, api)
