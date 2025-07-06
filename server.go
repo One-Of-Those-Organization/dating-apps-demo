@@ -71,6 +71,8 @@ func InitAPIRoute(backend *Backend) {
 	HandleHobbyAdd(backend, api)
 	HandleHobbyInfoAll(backend, api)
 
+	HandleMatchmake(backend, cookieJWT)
+
 	// Frontend routes
 	IndexPage(backend, app)
 	LoginPage(backend, app)
