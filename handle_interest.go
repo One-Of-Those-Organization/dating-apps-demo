@@ -7,39 +7,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// POST: api/interest-add
-func HandleInterestAdd(bend *Backend, route fiber.Router){
-	route.Post("interest-add", func (c *fiber.Ctx) error {
-		var b struct {
-			Interests []string `json:"interests"`
-		}
-		if err := c.BodyParser(&b); err != nil {
-			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-				"code": fiber.StatusBadRequest,
-				"data": "Invalid request body",
-			})
-		}
-
-		for _, name := range b.Interests {
-			newInterest := table.Interest{
-				Name: name,
-			}
-			res := bend.db.Save(&newInterest)
-			if res.Error != nil {
-				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-					"code": fiber.StatusInternalServerError,
-					"data": fmt.Sprintf("There is a problem when trying to save to db, %v.", res.Error),
-				})
-			}
-		}
-
-		return c.Status(fiber.StatusOK).JSON(fiber.Map{
-			"code": fiber.StatusOK,
-			"data": nil,
-		})
-	})
-}
-
 // GET: api/interest-info-all
 func HandleInterestInfoAll(bend *Backend, route fiber.Router){
 	route.Get("interest-info-all", func (c *fiber.Ctx) error {

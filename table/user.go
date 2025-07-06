@@ -16,6 +16,6 @@ type User struct {
     Gender     bool      `gorm:"column:user_gender"`
     Home       string    `gorm:"column:user_home"`
 
-	Hobbies    []Hobby    `gorm:"many2many:HobbyID"`
-    Interests  []Interest `gorm:"many2many:InterestID"`
+	Hobbies    []Hobby    `gorm:"many2many:user_hobbies"`
+    Interests  []Interest `gorm:"many2many:user_interests"`
 }

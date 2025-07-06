@@ -53,6 +53,52 @@ func HandleUserRegister(bend *Backend, route fiber.Router){
 			})
 		}
 
+		var hobbies []table.Hobby
+		for _, hobbyInput := range b.Hobbies {
+			var h table.Hobby
+			err := bend.db.Where("hobby_name = ?", hobbyInput.Name).First(&h).Error
+			if err != nil {
+				if errors.Is(err, gorm.ErrRecordNotFound) {
+					h = table.Hobby{Name: hobbyInput.Name}
+					if err := bend.db.Create(&h).Error; err != nil {
+						return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+							"code": fiber.StatusInternalServerError,
+							"data": fmt.Sprintf("Failed to create hobby: %v", err),
+						})
+					}
+				} else {
+					return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+						"code": fiber.StatusInternalServerError,
+						"data": fmt.Sprintf("Error looking up hobby: %v", err),
+					})
+				}
+			}
+			hobbies = append(hobbies, h)
+		}
+
+		var interests []table.Interest
+		for _, InterestInput := range b.Interests {
+			var h table.Interest
+			err := bend.db.Where("hobby_name = ?", InterestInput.Name).First(&h).Error
+			if err != nil {
+				if errors.Is(err, gorm.ErrRecordNotFound) {
+					h = table.Interest{Name: InterestInput.Name}
+					if err := bend.db.Create(&h).Error; err != nil {
+						return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+							"code": fiber.StatusInternalServerError,
+							"data": fmt.Sprintf("Failed to create interest, %v.", err),
+						})
+					}
+				} else {
+					return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+						"code": fiber.StatusInternalServerError,
+						"data": fmt.Sprintf("Error looking up interest, %v.", err),
+					})
+				}
+			}
+			interests = append(interests, h)
+		}
+
 		newUser := table.User{
 			Name: b.Name,
 			FullName: b.FullName,
@@ -62,8 +108,8 @@ func HandleUserRegister(bend *Backend, route fiber.Router){
 			Password: hashedPassword,
 			Gender: b.Gender,
 			Home: b.Home,
-			Hobbies: b.Hobbies,
-			Interests: b.Interests,
+			Hobbies: hobbies,
+			Interests: interests,
 		}
 
 		res := bend.db.Save(&newUser)
@@ -96,7 +142,7 @@ func HandleUserLogin(bend *Backend, route fiber.Router) {
 			})
 		}
 
-		if len(b.Name) <= 0 || len(b.Pass) <= MIN_PASSLEN {
+		if len(b.Name) <= 0 || len(b.Pass) < MIN_PASSLEN {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"code": fiber.StatusBadRequest,
 				"data": "Invalid request body value.",
@@ -220,9 +266,55 @@ func HandleUserEdit(bend *Backend, route fiber.Router){
 			})
 		}
 
+		var hobbies []table.Hobby
+		for _, hobbyInput := range b.Hobbies {
+			var h table.Hobby
+			err := bend.db.Where("hobby_name = ?", hobbyInput.Name).First(&h).Error
+			if err != nil {
+				if errors.Is(err, gorm.ErrRecordNotFound) {
+					h = table.Hobby{Name: hobbyInput.Name}
+					if err := bend.db.Create(&h).Error; err != nil {
+						return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+							"code": fiber.StatusInternalServerError,
+							"data": fmt.Sprintf("Failed to create hobby: %v", err),
+						})
+					}
+				} else {
+					return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+						"code": fiber.StatusInternalServerError,
+						"data": fmt.Sprintf("Error looking up hobby: %v", err),
+					})
+				}
+			}
+			hobbies = append(hobbies, h)
+		}
+
+		var interests []table.Interest
+		for _, InterestInput := range b.Interests {
+			var h table.Interest
+			err := bend.db.Where("hobby_name = ?", InterestInput.Name).First(&h).Error
+			if err != nil {
+				if errors.Is(err, gorm.ErrRecordNotFound) {
+					h = table.Interest{Name: InterestInput.Name}
+					if err := bend.db.Create(&h).Error; err != nil {
+						return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+							"code": fiber.StatusInternalServerError,
+							"data": fmt.Sprintf("Failed to create interest, %v.", err),
+						})
+					}
+				} else {
+					return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+						"code": fiber.StatusInternalServerError,
+						"data": fmt.Sprintf("Error looking up interest, %v.", err),
+					})
+				}
+			}
+			interests = append(interests, h)
+		}
+
 		// NOTE: Will overwritte so please do info-of first and send the mutated one.
-		if len(b.Hobbies) > 0   { user.Hobbies = b.Hobbies }
-		if len(b.Interests) > 0 { user.Interests = b.Interests }
+		if len(hobbies) > 0   { user.Hobbies = hobbies }
+		if len(interests) > 0 { user.Interests = interests }
 
 		if b.FullName != nil {
 			if len(*b.FullName) > 0 { user.FullName = *b.FullName }

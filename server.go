@@ -62,10 +62,8 @@ func InitAPIRoute(backend *Backend) {
 	HandleUserInfo(backend, cookieJWT)
 	HandleUserLogout(backend, cookieJWT)
 
-	HandleInterestAdd(backend, api)
 	HandleInterestInfoAll(backend, api)
 
-	HandleHobbyAdd(backend, api)
 	HandleHobbyInfoAll(backend, api)
 
 	HandleMatchmake(backend, cookieJWT)
