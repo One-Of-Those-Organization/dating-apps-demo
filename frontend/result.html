@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <title>Result</title>
+    <link rel="icon" href="/style/love.png" />
   </head>
   <body class="bg-pink-50 min-h-screen flex flex-col">
     <!-- Header -->
@@ -132,7 +133,6 @@
             }
           })
           .catch((error) => {
-            console.error("Logout error:", error);
             alert("An error occurred during logout. Please try again.");
           });
       }

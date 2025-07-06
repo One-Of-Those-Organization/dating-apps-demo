@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <title>Login Page</title>
+    <link rel="icon" href="/style/love.png" />
   </head>
   <body>
     <!-- Navbar Menu -->
@@ -316,12 +317,23 @@
           },
           body: JSON.stringify(data),
         }).then((response) => {
-            if (response.status === 200) {
-                window.location.href = "/login";
-            } else {
-                error.innerText = "Registration failed. Please try again.";
-            }
+          if (response.status === 200) {
+            window.location.href = "/login";
+          } else {
+            error.innerText = "Registration failed. Please try again.";
+          }
         });
       });
+
+    // Handle Enter key for form submission (Adjust UX)
+    const formInputs = document.querySelectorAll("input, select");
+    formInputs.forEach((input) => {
+      input.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          document.querySelector("button[type='submit']").click();
+        }
+      });
+    });
   </script>
 </html>
