@@ -242,7 +242,7 @@
               ),
           }).then((response) => {
               if (response.status == 200) {
-//                  window.location.href = "/p/result";
+                  window.location.href = "/p/result";
               } else {
                   throw new Error("Failed to save the new user data.");
               }
@@ -261,73 +261,51 @@
       }
 
       // Fetch data yang sudah user simpan sebelumnya
-      function fetchUserSavedData() {
-        // Fetch saved hobbies
-        fetch("/api/hobby-info-all", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        })
-          .then((response) => response.json())
-          .then((response) => {
-            if (response.code === 200 && Array.isArray(response.data)) {
-              const hobbySelect = document.getElementById("hobby");
-
-              // Set selected berdasarkan data yang sudah tersimpan
-              response.data.forEach((item) => {
-                const savedHobbyName = item.Name || "";
-
-                // Cari option yang sesuai dan set selected
-                const option = hobbySelect.querySelector(
-                  `option[value="${savedHobbyName}"]`
-                );
-                if (option) {
-                  option.selected = true;
-                }
+      async function fetchUserSavedData() {
+          try {
+              const response = await fetch("/api/p/user-info", {
+                  method: "GET",
+                  headers: {
+                      "Content-Type": "application/json",
+                  },
               });
 
-              // Update chosen plugin
-              $("#hobby").trigger("chosen:updated");
-            }
-          })
-          .catch((error) => {
-            console.error("Error fetching user hobbies:", error);
-          });
+              if (!response.ok) {
+                  console.error("Failed to fetch:", response.status);
+                  return;
+              }
 
-        // Fetch saved interests
-        fetch("/api/interest-info-all", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        })
-          .then((response) => response.json())
-          .then((response) => {
-            if (response.code === 200 && Array.isArray(response.data)) {
+              const data = await response.json();
+
+              const hobbySelect = document.getElementById("hobby");
               const interestSelect = document.getElementById("interest");
 
-              // Set selected berdasarkan data yang sudah tersimpan
-              response.data.forEach((item) => {
-                const savedInterestName = item.Name || "";
+              if (Array.isArray(data.data.Hobbies)) {
+                  data.data.Hobbies.forEach((item) => {
+                      const savedHobbyName = item.Name || "";
+                      const option = hobbySelect.querySelector(
+                          `option[value="${savedHobbyName}"]`
+                      );
+                      if (option) option.selected = true;
+                  });
+                  $("#hobby").trigger("chosen:updated");
+              }
 
-                // Cari option yang sesuai dan set selected
-                const option = interestSelect.querySelector(
-                  `option[value="${savedInterestName}"]`
-                );
-                if (option) {
-                  option.selected = true;
-                }
-              });
-
-              // Update chosen plugin
-              $("#interest").trigger("chosen:updated");
-            }
-          })
-          .catch((error) => {
-            console.error("Error fetching user interests:", error);
-          });
+              if (Array.isArray(data.data.Interests)) {
+                  data.data.Interests.forEach((item) => {
+                      const savedInterestName = item.Name || "";
+                      const option = interestSelect.querySelector(
+                          `option[value="${savedInterestName}"]`
+                      );
+                      if (option) option.selected = true;
+                  });
+                  $("#interest").trigger("chosen:updated");
+              }
+          } catch (error) {
+              console.error("Error fetching user hobbies:", error);
+          }
       }
+
 
       // API logout
       function handleLogout() {
