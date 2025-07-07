@@ -199,11 +199,12 @@
               password: password.value,
             }),
           });
+          const result = await response.json();
 
           if (response.status === 200) {
             window.location.href = "/p/home"; // Redirect to home page
           } else {
-            error.innerText = "Login failed. Please check your credentials.";
+            error.innerText = result.data || "Login failed. Please try again.";
             error.style.display = "grid";
           }
         } catch (err) {
