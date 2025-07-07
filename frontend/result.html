@@ -89,10 +89,33 @@
         <p class="text-lg text-pink-600 mb-8 text-center">
           Here are your best matches based on your hobbies and interests!
         </p>
-        <!-- Container for matchmaking results -->
-        <div id="match-results" class="space-y-6">
-          <!-- Cards will be inserted here by JS -->
+        <!-- Loading Spinner -->
+        <div id="match-loading" class="flex justify-center items-center py-12">
+          <svg
+            class="animate-spin h-8 w-8 text-pink-500 mr-3"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+              fill="none"
+            />
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v8H4z"
+            />
+          </svg>
+          <span class="text-pink-500 text-lg font-semibold"
+            >Loading your matches...</span
+          >
         </div>
+        <!-- Container for matchmaking results -->
+        <div id="match-results" class="space-y-6"></div>
         <div class="flex justify-center mt-8">
           <button
             onclick="window.location.href='./home'"
@@ -111,6 +134,7 @@
 
     <!-- JavaScript -->
     <script>
+      // Navbar hamburger menu
       const menuBtn = document.getElementById("menu-btn");
       const mobileMenu = document.getElementById("mobile-menu");
 
@@ -119,7 +143,6 @@
         mobileMenu.classList.toggle("translate-x-full");
       });
 
-      // Close menu when clicking outside
       document.addEventListener("click", function (event) {
         if (
           !menuBtn.contains(event.target) &&
@@ -129,18 +152,19 @@
         }
       });
 
-      // Close menu when resize to desktop
       window.addEventListener("resize", () => {
         if (window.innerWidth >= 768) {
           mobileMenu.classList.add("translate-x-full");
         }
       });
 
-      // Handle Match Love
+      // Handle matchmaking results with loading
       window.addEventListener("DOMContentLoaded", function () {
         const container = document.getElementById("match-results");
+        const loading = document.getElementById("match-loading");
+        loading.style.display = "flex";
+        container.innerHTML = "";
 
-        // Current user info and matchmaking results (fetch from API)
         Promise.all([
           fetch("/api/p/user-info", { credentials: "include" }).then((res) =>
             res.json()
@@ -148,67 +172,78 @@
           fetch("/api/p/matchmake", { credentials: "include" }).then((res) =>
             res.json()
           ),
-        ]).then(([userRes, matchRes]) => {
-          let html = "";
+        ])
+          .then(([userRes, matchRes]) => {
+            let html = "";
 
-          // Card Current User
-          if (userRes && userRes.data) {
-            const user = userRes.data;
-            const genderString =
-              user.Gender === false || user.gender === false
-                ? "male"
-                : "female";
-            html += `
-        <div class="bg-white rounded-xl shadow p-6 mb-6 text-left border-2 border-pink-300 max-w-2xl mx-auto">
-          <div class="text-2xl font-bold text-pink-700 mb-2">${user.FullName}</div>
-          <div class="text-pink-600 mb-1">Age: ${user.Age}</div>
-          <div class="text-pink-600 mb-1">Gender: ${genderString}</div>
-          <div class="text-pink-600 mb-1">Address: ${user.Home}</div>
-          <div class="text-pink-600 mb-1">Instance: ${user.Instance}</div>
-          <div class="text-pink-400 mt-1 font-semibold">(You)</div>
-        </div>
-      `;
-          }
-
-          // Love Icon (centered)
-          html += `
-      <div class="flex justify-center items-center my-4">
-        <img src="/style/love.png" alt="love" class="w-16 h-16" />
-      </div>
-    `;
-
-          // Card Matchmaking Results
-          if (!matchRes.data || matchRes.data.length === 0) {
-            html += `<div class="text-pink-600 text-center">💔 No match(es) found. 💔</div>`;
-          } else {
-            matchRes.data.forEach((match) => {
-              const user = match.user;
+            // Card Current User
+            if (userRes && userRes.data) {
+              const user = userRes.data;
               const genderString =
                 user.Gender === false || user.gender === false
                   ? "male"
                   : "female";
               html += `
-          <div class="bg-white rounded-xl shadow p-6 mb-6 text-left border-2 border-pink-300 max-w-2xl mx-auto">
-            <div class="text-2xl font-bold text-pink-700 mb-2">${
-              user.FullName
-            }</div>
-            <div class="text-pink-600 mb-1">Age: ${user.Age}</div>
-            <div class="text-pink-600 mb-1">Gender: ${genderString}</div>
-            <div class="text-pink-600 mb-1">Address: ${user.Home}</div>
-            <div class="text-pink-600 mb-1">Instance: ${user.Instance}</div>
-            <div class="font-semibold text-pink-800 mt-2">Compatibility Score: ${match.compatibility_score.toFixed(
-              2
-            )}</div>
-          </div>
-        `;
-            });
-          }
+                <div class="bg-white rounded-xl shadow p-6 mb-6 text-left border-2 border-pink-300 max-w-2xl mx-auto">
+                  <div class="text-2xl font-bold text-pink-700 mb-2">${user.FullName}</div>
+                  <div class="text-pink-600 mb-1">Age: ${user.Age}</div>
+                  <div class="text-pink-600 mb-1">Gender: ${genderString}</div>
+                  <div class="text-pink-600 mb-1">Address: ${user.Home}</div>
+                  <div class="text-pink-600 mb-1">Instance: ${user.Instance}</div>
+                  <div class="text-pink-400 mt-1 font-semibold">(You)</div>
+                </div>
+              `;
+            }
 
-          container.innerHTML = html;
-        });
+            // Love Icon (centered)
+            html += `
+              <div class="flex justify-center items-center my-4">
+                <img src="/style/love.png" alt="love" class="w-16 h-16" />
+              </div>
+            `;
+
+            // Card Matchmaking Results
+            if (!matchRes.data || matchRes.data.length === 0) {
+              html += `<div class="text-pink-600 text-center">💔 No match(es) found. 💔</div>`;
+            } else {
+              matchRes.data.forEach((match) => {
+                const user = match.user;
+                const genderString =
+                  user.Gender === false || user.gender === false
+                    ? "male"
+                    : "female";
+                html += `
+                  <div class="bg-white rounded-xl shadow p-6 mb-6 text-left border-2 border-pink-300 max-w-2xl mx-auto">
+                    <div class="text-2xl font-bold text-pink-700 mb-2">${
+                      user.FullName
+                    }</div>
+                    <div class="text-pink-600 mb-1">Age: ${user.Age}</div>
+                    <div class="text-pink-600 mb-1">Gender: ${genderString}</div>
+                    <div class="text-pink-600 mb-1">Address: ${user.Home}</div>
+                    <div class="text-pink-600 mb-1">Instance: ${
+                      user.Instance
+                    }</div>
+                    <div class="font-semibold text-pink-800 mt-2">Compatibility Score: ${
+                      match.compatibility_score
+                        ? match.compatibility_score.toFixed(2)
+                        : "N/A"
+                    }</div>
+                  </div>
+                `;
+              });
+            }
+
+            container.innerHTML = html;
+          })
+          .catch(() => {
+            container.innerHTML = `<div class="text-center text-red-500 font-bold">Failed to load results. Please refresh the page.</div>`;
+          })
+          .finally(() => {
+            loading.style.display = "none";
+          });
       });
 
-      // Handle Logout (Clear Sesssion)
+      // Handle Logout (Clear Session)
       function handleLogout() {
         fetch("/api/p/user-logout", {
           method: "POST",
@@ -223,7 +258,7 @@
               alert("Logout failed. Please try again.");
             }
           })
-          .catch((error) => {
+          .catch(() => {
             alert("An error occurred during logout. Please try again.");
           });
       }
