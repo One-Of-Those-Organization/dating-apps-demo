@@ -488,8 +488,8 @@ func HandleMatchmake(bend *Backend, route fiber.Router) {
 			}
 		}
 		slices.Reverse(deletionList)
-		for i := range deletionList {
-			matches = append(matches[:i], matches[i+1:]...)
+		for _, deleteIndex := range deletionList {
+			matches = append(matches[:deleteIndex], matches[deleteIndex+1:]...)
 		}
 
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
