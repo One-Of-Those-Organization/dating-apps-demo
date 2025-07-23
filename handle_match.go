@@ -187,7 +187,6 @@ func calculateFitness(userA, userB table.User) float64 {
 		score += interestScore * 0.25
 	}
 
-	// Gender diversity bonus
 	if userA.Gender != userB.Gender {
 		score += 10
 	} else { score -= 1e12 }
@@ -221,8 +220,8 @@ func countSharedInterests(interestsA, interestsB []table.Interest) int {
 	return shared
 }
 
-// Create initial population - fixed for genetic algorithm with small datasets
 func createInitialPopulation(currentUser table.User, allUsers []table.User, populationSize int) Population {
+	// Declare population
 	population := make(Population, 0, populationSize)
 
 	// Get all other users (excluding current user)
@@ -243,7 +242,7 @@ func createInitialPopulation(currentUser table.User, allUsers []table.User, popu
 		populationSize = minPopSize
 	}
 
-	// Create chromosomes by repeating other users to fill population
+	// Create the chromosome inside population
 	for i := 0; i < populationSize; i++ {
 		selectedUser := otherUsers[i%len(otherUsers)]
 		chromosome := Chromosome{
@@ -254,7 +253,7 @@ func createInitialPopulation(currentUser table.User, allUsers []table.User, popu
 		population = append(population, chromosome)
 	}
 
-	// Add some randomness to the initial population
+	// Mutate
 	for i := 0; i < len(population)/2; i++ {
 		randomUser := otherUsers[rand.Intn(len(otherUsers))]
 		population[i].UserB = randomUser
@@ -268,6 +267,7 @@ func tournamentSelection(population Population, tournamentSize int) Chromosome {
 	if len(population) == 0 {
 		return Chromosome{}
 	}
+	// population * 0.1 = tournamentSize
 
 	// Adjust tournament size for small populations
 	actualTournamentSize := max(int(math.Min(float64(tournamentSize), float64(len(population)))), 1)
@@ -282,6 +282,7 @@ func tournamentSelection(population Population, tournamentSize int) Chromosome {
 	return best
 }
 
+// BERANAK
 func crossover(parent1, parent2 Chromosome, allUsers []table.User) Chromosome {
 	// Get other users (excluding current user)
 	otherUsers := make([]table.User, 0)
