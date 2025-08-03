@@ -2,17 +2,17 @@ package main
 
 import (
 	"dating-apps/table"
-	"encoding/json"
-	"fmt"
+	// "encoding/json"
+	// "fmt"
 	"math"
 	"math/rand"
-	"net/http"
-	"net/url"
+	// "net/http"
+	// "net/url"
 	"slices"
 	"sort"
-	"strconv"
+	// "strconv"
 	"strings"
-	"time"
+	// "time"
 
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
@@ -45,6 +45,7 @@ type LocationData struct {
 	Lon         float64
 }
 
+/*
 // Cache for geocoded locations to avoid repeated API calls
 var locationCache = make(map[string]LocationData)
 
@@ -65,6 +66,7 @@ func geocodeLocation(location string) (LocationData, error) {
 	params.Add("limit", "1")
 
 	fullURL := fmt.Sprintf("%s?%s", baseURL, params.Encode())
+	fmt.Printf("FETCHING : %s\n", fullURL)
 
 	// Create HTTP client with timeout
 	client := &http.Client{
@@ -74,8 +76,8 @@ func geocodeLocation(location string) (LocationData, error) {
 	// Make request
 	resp, err := client.Get(fullURL)
 	if err != nil {
-		return LocationData{}, err
 	}
+	return LocationData{}, err
 	defer resp.Body.Close()
 
 	// Parse response
@@ -157,6 +159,20 @@ func calculateLocationScore(userA, userB table.User) float64 {
 	score := 30.0 * math.Exp(-distance/50.0)
 
 	return score
+}*/
+
+// Calculate location compatibility score based on distance
+func calculateLocationScore(userA, userB table.User) float64 {
+	if strings.EqualFold(userA.Home, userB.Home) {
+		return 30.0
+	}
+
+	if strings.Contains(strings.ToLower(userA.Home), strings.ToLower(userB.Home)) || 
+	strings.Contains(strings.ToLower(userB.Home), strings.ToLower(userA.Home)) {
+		return 15.0
+    }
+
+	return 5.0
 }
 
 func calculateFitness(userA, userB table.User) float64 {
